@@ -1,6 +1,6 @@
 # CLAUDE.md — Constitución técnica de Solemia
 
-> **Estado:** Draft v0.1 — pendiente de revisión por Andrés y Mario.
+> **Estado:** Draft v0.2 — pendiente de revisión por Andrés.
 > **Última edición:** 2026-04-28 (Mario E. con apoyo de Claude).
 > **Naturaleza:** Este documento se hereda en cada repo de proyecto cliente vía referencia. Es la fuente única de las reglas técnicas comunes a toda Solemia.
 
@@ -110,17 +110,19 @@ Detalle completo de cada fase y responsabilidades por rol → `03-Ventas/Fases_d
 - Refactor de código existente con tests que validen.
 - Generación de documentación a partir de código.
 - Mantenimiento de docs vivos (este, Stack, Decision_Log, etc.).
+- **Tests con datos sintéticos, mocks o seeds** — generar tests unitarios o de integración con datos de prueba está OK.
 - Sugerencias de mejora de código existente.
 
 **Claude NUNCA hace SOLO (siempre humano lo hace o lo aprueba primero):**
 - **Diagnóstico con cliente.** Es relación humana, juicio comercial, lectura de tono.
 - **Llenar el spec del proyecto.** Decidir qué entra al spec es juicio que requiere conocimiento del cliente.
-- **Testing con datos reales del cliente.** Riesgo de tocar producción.
+- **Testing CON datos reales de producción del cliente.** Riesgo de afectar datos vivos. Si Mario o Andrés quieren un test, le pasan a Claude datos sintéticos / seeds / mocks.
 - **Migración de datos desordenados.** Necesita criterio humano sobre qué transformar.
 - **Relación con cliente.** Andrés es la cara, no la IA.
 - **Push directo a producción.** Siempre con humano en el loop.
 - **Decisiones de arquitectura nuevas.** Si el patrón no está en el Base Kit, parar y consultar.
 - **Cambios al alcance del proyecto.** Aplica regla del playbook F4.
+- **Actuar fuera de las instrucciones documentadas.** Si una tarea pide algo que no está en el `CLAUDE.md` del proyecto ni en este `CLAUDE_Solemia.md`, **paro y pregunto antes de improvisar**. NO invento patrones nuevos basado en suposiciones.
 
 ---
 
@@ -208,9 +210,7 @@ Cualquier sistema que toque dinero, comunicación pública, o decisiones contrac
 - **Migration registrada** si se tocó DB.
 - **CLAUDE.md del proyecto actualizado** si se introdujo una convención nueva o un gotcha que el siguiente Claude que abra el repo necesita saber.
 
-### Convenciones por defecto (sujetas a validación de Andrés/Mario)
-
-Estas son sugerencias por default que Mario/Andrés pueden confirmar, ajustar, o rechazar al revisar este doc:
+### Convenciones por defecto (sujetas a validación de Andrés/Mario al construir el primer Base Kit)
 
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `chore:`, `test:`).
 - **Branches:** GitHub flow simple (main + feature branches + PR). No git flow — overkill para equipo de 2.
@@ -220,30 +220,63 @@ Estas son sugerencias por default que Mario/Andrés pueden confirmar, ajustar, o
 
 ---
 
-## Decisiones técnicas: cerradas vs abiertas
+## Cuando se vaya a crear un proyecto nuevo cliente
+
+### Para Mario (humano que arranca el proyecto)
+
+Checklist paso a paso para arrancar un repo nuevo de proyecto cliente desde cero:
+
+1. **Confirmar que la fase F2 está cerrada.** Propuesta firmada por el cliente y primer pago cobrado. Sin esto, no se arranca código. Detalle del playbook → `03-Ventas/Fases_de_Entrega.html`.
+2. **Confirmar la línea de servicio** (L1 / L2 / L3 / combinación) según el diagnóstico de F1.
+3. **Crear el repo en GitHub** bajo `cenitvertex/cliente-[slug]` (ej: `cenitvertex/cliente-jonathan-dental`, `cenitvertex/cliente-pizzeria-X`, `cenitvertex/cliente-fletes-padilla`).
+4. **Clonar el Base Kit correspondiente** a la línea (cuando exista — hoy todavía está en construcción; mientras tanto, repo vacío).
+5. **Crear `CLAUDE.md` del proyecto** copiando `06-Tecnico/CLAUDE_Template_Proyecto.md` (próximo a crear) y rellenar los campos: cliente, contacto, servicios contratados, módulos activados del Base Kit, gotchas conocidos.
+6. **Configurar `.env.local`** con las credenciales del cliente (Supabase URL + keys, Twilio si aplica, OpenAI/Anthropic API key, etc.). NUNCA committear este archivo.
+7. **Proteger la rama `master`** en GitHub (Settings → Branches → Add branch protection rule → require pull request review antes de merge). Esto evita que se pushee directo y obliga a revisión.
+8. **Primer commit** con estado base post-bootstrap.
+9. **Avisar a Andrés** que el repo está listo para arrancar F4 (diseño/blueprint).
+
+### Para Claude / Cursor cuando abre un repo nuevo de cliente
+
+Cuando entres por primera vez a un repo `cenitvertex/cliente-[slug]`:
+
+1. **Lee primero el `CLAUDE.md` del proyecto** (raíz del repo). Es la fuente de info específica del cliente.
+2. **Lee este `CLAUDE_Solemia.md`** completo si nunca lo has leído. Las reglas cardinales son no-negociables.
+3. **Identifica la línea de servicio** y los módulos activados del Base Kit (debe estar en el CLAUDE.md del proyecto).
+4. **Confirma que el spec del proyecto** (resultado de F3) está disponible — busca carpeta `/spec/` en el repo o referencia en el CLAUDE.md del proyecto. **Si no está, NO empieces a construir** — pregunta a Mario o Andrés antes.
+5. **Revisa el estado del Base Kit clonado** — entiende qué viene por default antes de tocar nada (estructura de carpetas, tablas creadas, módulos activados, dependencias instaladas).
+6. **Si falta info crítica** (campos en el spec, decisiones del cliente, credenciales, módulos a activar), pregunta. NO inventes valores plausibles para "destrabar".
+7. **Aplica las reglas cardinales anti-noodle** desde el primer commit que hagas. No "primero arranco y después limpio".
+
+---
+
+## Decisiones técnicas: cerradas y por documentar
 
 ### Cerradas (en uso, no se discuten sin razón fuerte)
 
-- **Supabase para auth en proyectos con <50 usuarios internos** (no Clerk).
-- **TypeScript strict mode obligatorio.**
-- **Migrations versionadas siempre.**
-- **Base Kit + Módulos como motor de productización.**
-- **7 fases del playbook como flujo estándar de proyecto.**
-- **`bases-de-solemia` como single source of truth.**
+- **Supabase para auth** en proyectos con <50 usuarios internos (no Clerk).
+- **TypeScript strict mode** obligatorio.
+- **Migrations versionadas** siempre.
+- **Base Kit + Módulos** como motor de productización.
+- **7 fases del playbook** como flujo estándar de proyecto.
+- **`bases-de-solemia`** como single source of truth de docs internos.
+- **Naming de repos cliente:** `cliente-[slug]` (ej: `cliente-jonathan-dental`, `cliente-pizzeria-X`, `cliente-fletes-padilla`).
+- **Feature branches + PR para todo cambio en repo de cliente** (no push directo a master). Andrés (o Mario, según el caso) revisa antes de merge.
 
-### Abiertas — pendientes de cerrar entre Mario y Andrés
+### Por documentar al construir el primer Base Kit L3
 
-Cada una con propuesta tentativa para arrancar discusión:
+Solemia **NO toma estas decisiones por adelantado en abstracto**. Cuando Mario arranque la primera implementación real de Next.js + Supabase (probablemente Consultorio Dental Jonathan García o Pizzería), las herramientas que Claude Code o Cursor configuren por default al inicializar el proyecto son las que quedan estandarizadas. Se documentan acá en ese momento, no antes — esto evita debates teóricos sobre herramientas que aún no se usan.
 
-- **Linter:** [PROPUESTA: ESLint + Prettier — más maduro y default React]. Alternativa Biome (rápido, más nuevo).
-- **Package manager:** [PROPUESTA: pnpm — rápido, eficiente con monorepos]. Alternativas npm o bun.
-- **Testing framework:** [PROPUESTA: Vitest — moderno, rápido, API compatible con Jest]. Alternativa Jest.
-- **UI library:** [PROPUESTA: shadcn/ui + Tailwind — default React 2025]. Alternativa componentes propios + Tailwind.
-- **CI/CD:** [PROPUESTA: GitHub Actions para lint+tests, Vercel auto-deploy desde main para frontend].
-- **Convención de naming de repos por cliente:** [PROPUESTA: `cliente-[slug]` — ej: `cliente-jonathan-dental`, `cliente-pizzeria-X`].
-- **Branch strategy formal:** [PROPUESTA: `main` protegido, feature branches `feat/`, hotfix branches `hotfix/`].
+Categorías a documentar cuando se construya el Base Kit L3:
 
-Estas decisiones se cierran a medida que se trabajen los siguientes docs del `06-Tecnico/`. Cuando una se cierra, se mueve a "Cerradas" arriba y se documenta el porqué en `Decision_Log.md`.
+- **Linter / Formatter** (probable: ESLint + Prettier o Biome — se decide al ver qué Claude Code instala por default).
+- **Package manager** (probable: pnpm o npm — se decide al `init`).
+- **Testing framework** (cuando se decida hacer tests — probable Vitest).
+- **UI library** (probable: shadcn/ui + Tailwind si Claude Code lo sugiere).
+- **CI/CD pipeline** (cuando haga falta — probable GitHub Actions + Vercel auto-deploy).
+- **Branch strategy formal** (qué tan estricto: hoy `master` protegido + PR es el mínimo; si hace falta más estructura, se decide ahí).
+
+Cuando una de estas se documente, se mueve a "Cerradas" arriba y se registra en `Decision_Log.md` (próximo a crear) la opción elegida y por qué.
 
 ---
 
@@ -256,7 +289,7 @@ El `CLAUDE.md` de cada proyecto cliente debe seguir esta plantilla mínima:
 
 ## Hereda
 Este proyecto sigue la constitución técnica de Solemia:
-https://github.com/cenitvertex/bases-de-solemia/blob/main/06-Tecnico/CLAUDE_Solemia.md
+https://github.com/cenitvertex/bases-de-solemia/blob/master/06-Tecnico/CLAUDE_Solemia.md
 
 Las reglas cardinales y convenciones de Solemia aplican aquí. Lo de abajo es solo lo específico del proyecto.
 
@@ -321,7 +354,8 @@ Para no duplicar info, este doc remite a los documentos canónicos según el tem
 
 | Fecha | Versión | Quién | Notas |
 |---|---|---|---|
-| 2026-04-28 | v0.1 | Mario E. (con apoyo de Claude) | Creación inicial. Constitución redactada con base en docs vigentes de `01-Marca`, `02-Servicios`, `03-Ventas`, `04-Operacion`. Pendiente: validación de Andrés sobre roles, reglas cardinales, y decisiones abiertas. Convenciones técnicas marcadas como "sujetas a validación" hasta que cierren entre Mario y Andrés. |
+| 2026-04-28 | v0.1 | Mario E. (con apoyo de Claude) | Creación inicial. Constitución redactada con base en docs vigentes de `01-Marca`, `02-Servicios`, `03-Ventas`, `04-Operacion`. Pendiente: validación de Andrés sobre roles, reglas cardinales, y decisiones abiertas. |
+| 2026-04-28 | v0.2 | Mario E. (con apoyo de Claude) | Aplicado feedback inicial de Mario: (1) añadida sección "Cuando se vaya a crear un proyecto nuevo cliente" con sub-secciones para humano y para IA; (2) ajustada regla "Claude NUNCA hace solo testing" — solo aplica a datos reales de producción, tests con mocks/seeds están OK; (3) añadida regla "Claude NUNCA actúa fuera de instrucciones documentadas"; (4) reemplazada sección "Decisiones abiertas con propuesta tentativa" por "Decisiones por documentar al construir el primer Base Kit L3" — las herramientas se cierran al usarlas, no antes; (5) añadido a "Cerradas": naming de repos `cliente-[slug]` y feature branches + PR obligatorio. |
 
 ---
 ---
@@ -336,27 +370,29 @@ Para no duplicar info, este doc remite a los documentos canónicos según el tem
 - Nueva regla cardinal anti-noodle aprobada por Mario y Andrés (aprobación explícita requerida — ver "Reglas de qué NO hacer").
 - Cambio en división de roles entre Mario / Andrés / Cliente.
 - Nuevo doc creado en `06-Tecnico/` que merece referencia cruzada.
-- Decisión técnica abierta que se cierra (mover de "abiertas" a "cerradas" con nota en `Decision_Log.md`).
+- Decisión técnica "por documentar" que se cierra al usarse en proyecto real (mover de "por documentar" a "cerradas" con nota en `Decision_Log.md`).
 - Cambio en cómo Claude debe trabajar en repos de Solemia.
+- Cambio en checklist de creación de proyecto nuevo (sección "Cuando se vaya a crear un proyecto nuevo cliente").
 
 ### Reglas de qué NO hacer al editar este doc
 
 - **NO añadir reglas anti-noodle "cardinales" sin aprobación explícita** de Mario y Andrés. Las cardinales son estables. Proponer adiciones primero a `Reglas_Anti_Noodle.md`, promoverlas aquí solo cuando se vuelven verdaderamente cardinales y aprobadas.
 - **NO modificar identidad / valores / postura** sin coordinación con el doc de marca (`01-Marca/`).
-- **NO inventar convenciones técnicas** que no estén validadas. Si Andrés/Mario no han cerrado una decisión, mantenerla en "Decisiones abiertas" con propuesta tentativa.
+- **NO inventar convenciones técnicas** que no estén validadas. Si una decisión está en "por documentar", **NO la cierres tú** — espera a que se use en proyecto real.
 - **NO eliminar referencias cruzadas** aunque el doc referenciado no exista todavía. Marcar "(próximo a crear)".
 - **NO simplificar al punto de perder utilidad.** Este doc puede ser largo — su valor está en ser COMPLETO y autoritativo, no en ser corto.
 
 ### Cómo validar un cambio antes de aplicarlo
 
 - Cualquier edición a este doc debe ir como PR a `bases-de-solemia` con descripción que diga: qué cambió, por qué, y quién aprobó.
-- Cada 6 meses, revisar la sección "Decisiones abiertas" — si llevan más de 6 meses sin cerrarse, escalar a Mario/Andrés en checkpoint dedicado.
-- Cada vez que se cierre una decisión abierta, registrar en `Decision_Log.md` con fecha, opciones consideradas, decisión tomada, y razón.
+- Cada 6 meses, revisar la sección "Decisiones por documentar" — si llevan más de 6 meses sin cerrarse y los proyectos están activos, escalar a Mario/Andrés en checkpoint dedicado.
+- Cada vez que se cierre una decisión por documentar, registrar en `Decision_Log.md` con fecha, opciones consideradas, decisión tomada, y razón.
+- Cuando se actualice el checklist "Cuando se vaya a crear un proyecto nuevo cliente", validar que sea consistente con `Bootstrap_Repo.md` (próximo a crear) — ambos deben decir lo mismo.
 
 ### Si encuentras conflicto entre este doc y un CLAUDE.md de proyecto
 
 - **Las reglas cardinales de este doc PREVALECEN siempre** sobre cualquier CLAUDE.md de proyecto.
-- Las "decisiones abiertas" pueden cerrarse localmente en un proyecto si el caso lo amerita; debe documentarse el por qué en el CLAUDE.md de ese proyecto.
+- Las "decisiones por documentar" pueden cerrarse localmente en un proyecto si el caso lo amerita; debe documentarse el por qué en el CLAUDE.md de ese proyecto y proponerse PR a este doc para promover la decisión a "cerrada" oficialmente.
 - Convenciones específicas del proyecto sobreescriben las de default solo si están **explícitamente justificadas** en el CLAUDE.md del proyecto (no por omisión).
 
 ### Cómo se referencia este doc desde un proyecto cliente
@@ -366,7 +402,7 @@ El `CLAUDE.md` de un proyecto cliente debe iniciar con:
 ```markdown
 ## Hereda
 Este proyecto sigue la constitución técnica de Solemia:
-https://github.com/cenitvertex/bases-de-solemia/blob/main/06-Tecnico/CLAUDE_Solemia.md
+https://github.com/cenitvertex/bases-de-solemia/blob/master/06-Tecnico/CLAUDE_Solemia.md
 
 Léelo completo antes de tocar código en este repo. Las reglas cardinales aplican aquí — lo de abajo es solo lo específico de este cliente.
 ```
