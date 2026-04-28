@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solemia — Framework de Entrega V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F9F6F8;--bg2:#F0ECF0;--surface:#fff;--border:rgba(75,15,60,0.1);--border-mid:rgba(75,15,60,0.2);--text:#252525;--text2:#5A4F58;--text3:#8A7F88;--accent:#C32D4B;--accent2:#961E5A;--accent3:#4B0F3C;--sg:#E8F5EE;--s:#1A7A45;--dg:#FCEEF1;--d:#A01F38;--wg:#FFF3E0;--w:#8B4500;--ig:#EEF2FF;--i:#3B5998}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:2rem 1rem 4rem}
+.wrapper{max-width:820px;margin:0 auto}
+.header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border-mid)}
+.logo{font-family:'DM Serif Display',serif;font-size:28px;color:var(--accent3);letter-spacing:-0.5px}
+.logo span{color:var(--accent)}
+.hs{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding-bottom:4px}
+.tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;padding:8px 16px;border-radius:20px;border:0.5px solid var(--border-mid);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.tab.active{background:var(--accent3);color:#fff;border-color:var(--accent3);font-weight:500}
+.tab:hover:not(.active){background:var(--bg2)}
+.sec{display:none}.sec.active{display:block}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px}
+.ct{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.cs{font-size:13px;color:var(--text2);line-height:1.7}
+.qb{padding:1rem 1.25rem;border-left:2px solid var(--accent);background:var(--bg2);border-radius:0 8px 8px 0;margin-bottom:14px}
+.qt{font-family:'DM Serif Display',serif;font-size:14px;color:var(--text);line-height:1.65;font-style:italic}
+.div{height:0.5px;background:var(--border);margin:14px 0}
+.lbl{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;margin-top:14px}
+.stitle{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin-bottom:6px}
+.row{display:flex;gap:8px;margin-bottom:7px;align-items:flex-start}
+.dot{width:5px;height:5px;border-radius:50%;margin-top:7px;flex-shrink:0}
+.da{background:var(--accent)}.dg{background:var(--s)}.dr{background:var(--d)}.dw{background:var(--w)}.di{background:var(--i)}
+.rt{font-size:13px;color:var(--text2);line-height:1.6}.rt strong{color:var(--text);font-weight:500}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:520px){.g2,.g3{grid-template-columns:1fr}}
+.pill{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:6px}
+.pg{background:var(--sg);color:var(--s)}.pr{background:var(--dg);color:var(--d)}.pw{background:var(--wg);color:var(--w)}.pa{background:var(--accent3);color:#fff}.pi{background:var(--ig);color:var(--i)}
+.mini{background:var(--bg2);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.mini-lbl{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.mini-val{font-size:13px;color:var(--text);line-height:1.45}.mini-val strong{color:var(--accent)}
+.warn{background:var(--dg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--d);line-height:1.6}.warn strong{font-weight:600}
+.tip{background:var(--sg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--text);line-height:1.6}.tip strong{color:var(--s)}
+.note{background:var(--wg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--w);line-height:1.6}.note strong{font-weight:600}
+.info{background:var(--ig);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--i);line-height:1.6}.info strong{font-weight:600}
+
+/* PHASE CARDS */
+.phase{border-radius:12px;overflow:hidden;margin-bottom:12px;border:0.5px solid var(--border)}
+.phase-head{padding:1rem 1.25rem;display:flex;align-items:center;gap:14px;cursor:pointer}
+.phase-head:hover{background:var(--bg2)}
+.phase-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
+.phase-info{flex:1}
+.phase-name{font-size:15px;font-weight:500;color:var(--text)}
+.phase-meta{font-size:12px;color:var(--text3);margin-top:1px}
+.phase-body{padding:0 1.25rem 1.25rem;display:none;border-top:0.5px solid var(--border)}
+.phase-body.open{display:block}
+.phase-arrow{font-size:12px;color:var(--text3);transition:transform .2s;flex-shrink:0}
+.phase-arrow.open{transform:rotate(180deg)}
+
+/* INTERNAL GRID */
+.ig{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
+@media(max-width:520px){.ig{grid-template-columns:1fr}}
+.ig-title{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;padding-bottom:6px;border-bottom:0.5px solid var(--border)}
+
+/* CHECKLIST */
+.check{display:flex;gap:8px;align-items:flex-start;margin-bottom:5px;font-size:12px;color:var(--text2)}
+.check-box{width:14px;height:14px;border-radius:3px;border:1px solid var(--border-mid);flex-shrink:0;margin-top:1px}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="header">
+  <div class="logo">solemia<span>.</span></div>
+  <div class="hs">Framework de entrega · V2 · 2026</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('visual',this)">Visual — reunión</button>
+  <button class="tab" onclick="show('cliente',this)">Versión cliente</button>
+  <button class="tab" onclick="show('interno',this)">Uso interno</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODO 1: VISUAL REUNIÓN
+══════════════════════════════════════════ -->
+<div id="s-visual" class="sec active">
+
+<div class="qb">
+  <div class="qt">"¿Cómo funciona trabajar con ustedes?" — Esta es la respuesta. Clara, sin tecnicismos, en menos de 5 minutos.</div>
+</div>
+
+<div class="card" style="border-left:3px solid #6C757D">
+  <div class="g2">
+    <div><div class="pill" style="background:#6C757D;color:#fff">F1 · Pre-proyecto</div>
+    <div class="ct">Diagnóstico</div></div>
+    <div class="mini"><div class="mini-lbl">Duración</div><div class="mini-val">1 sesión · <strong>Gratis</strong></div></div>
+  </div>
+  <div class="cs">Nos sentamos contigo a entender cómo opera tu negocio hoy. Identificamos qué proceso te consume más tiempo o dinero, dónde viven tus datos, y qué tipo de solución necesita tu negocio. No proponemos nada hasta entender el problema real.</div>
+  <div class="tip"><strong>Entregable:</strong> Propuesta con el problema identificado, la solución recomendada, el timeline de entrega, y la inversión.</div>
+</div>
+
+<div class="card" style="border-left:3px solid var(--accent2)">
+  <div class="g2">
+    <div><div class="pill" style="background:var(--accent2);color:#fff">F2 · Pre-proyecto</div>
+    <div class="ct">Propuesta y cierre</div></div>
+    <div class="mini"><div class="mini-lbl">Duración</div><div class="mini-val">2–3 días después del diagnóstico</div></div>
+  </div>
+  <div class="cs">Te presentamos qué vamos a resolver, cómo, en cuánto tiempo, y cuánto cuesta. Si aceptas, arrancamos. Si no, no hay compromiso.</div>
+  <div class="tip"><strong>Entregable:</strong> Propuesta firmada + primer pago para arrancar.</div>
+</div>
+
+<div style="text-align:center;font-size:11px;color:var(--text3);padding:6px 0;text-transform:uppercase;letter-spacing:.06em">— A partir de aquí se cobra —</div>
+
+<div class="card" style="border-left:3px solid var(--i)">
+  <div class="g2">
+    <div><div class="pill pi">F3</div>
+    <div class="ct">Especificación</div></div>
+    <div class="mini"><div class="mini-lbl">Duración</div><div class="mini-val">3–5 días</div></div>
+  </div>
+  <div class="cs">Recopilamos todo lo que necesitamos de tu negocio para construir: listas de precios, catálogos, reglas de operación, accesos a sistemas. Tú proporcionas la información — nosotros la estructuramos.</div>
+  <div class="tip"><strong>Entregable:</strong> Spec completo del proyecto listo para diseñar.</div>
+</div>
+
+<div class="card" style="border-left:3px solid var(--accent3)">
+  <div class="g2">
+    <div><div class="pill pa">F4</div>
+    <div class="ct">Diseño</div></div>
+    <div class="mini"><div class="mini-lbl">Duración</div><div class="mini-val">2–3 días</div></div>
+  </div>
+  <div class="cs">Te mostramos exactamente cómo va a funcionar el sistema antes de construirlo: qué hace, qué decisiones toma solo, cuáles te llegan a ti, y cómo se ve tu panel. Tú apruebas antes de que construyamos cualquier cosa.</div>
+  <div class="tip"><strong>Entregable:</strong> Blueprint del sistema aprobado por el cliente.</div>
+</div>
+
+<div class="card" style="border-left:3px solid var(--accent)">
+  <div class="g2">
+    <div><div class="pill" style="background:var(--accent);color:#fff">F5</div>
+    <div class="ct">Construcción</div></div>
+    <div class="mini"><div class="mini-lbl">Duración</div><div class="mini-val">Variable según proyecto</div></div>
+  </div>
+  <div class="cs">Construimos el sistema. Cada semana te mostramos avances reales — no esperas semanas para ver algo. Si algo no te convence, se ajusta antes de seguir.</div>
+  <div class="tip"><strong>Entregable:</strong> Sistema completo en ambiente de prueba.</div>
+</div>
+
+<div class="card" style="border-left:3px solid var(--s)">
+  <div class="g2">
+    <div><div class="pill pg">F6</div>
+    <div class="ct">Entrega</div></div>
+    <div class="mini"><div class="mini-lbl">Duración</div><div class="mini-val">3–5 días</div></div>
+  </div>
+  <div class="cs">El sistema entra a tu negocio real. Te enseñamos a usarlo en máximo 1 hora. Si tarda más, el sistema está mal diseñado — y lo rediseñamos. Las primeras 2 semanas incluyen acompañamiento intensivo.</div>
+  <div class="tip"><strong>Entregable:</strong> Sistema en producción + capacitación + 2 semanas de acompañamiento.</div>
+</div>
+
+<div class="card" style="border-left:3px solid var(--accent3)">
+  <div class="g2">
+    <div><div class="pill pa">F7 · Continuo</div>
+    <div class="ct">Operación + fee mensual</div></div>
+    <div class="mini"><div class="mini-lbl">Desde</div><div class="mini-val">Mes 2 en adelante</div></div>
+  </div>
+  <div class="cs">Monitoreamos tu sistema, resolvemos cualquier problema, y hacemos hasta 3 ajustes al mes. No es solo soporte — es un equipo que mantiene y mejora tu sistema continuamente.</div>
+  <div class="tip"><strong>Incluye:</strong> Monitoreo, soporte <24h, ajustes menores, reporte mensual.</div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODO 2: VERSIÓN CLIENTE
+══════════════════════════════════════════ -->
+<div id="s-cliente" class="sec">
+
+<div class="qb">
+  <div class="qt">Esto es lo que le dejan al cliente después de la reunión. Responde: qué van a hacer, cuándo, qué recibe en cada etapa, y qué incluye el fee mensual.</div>
+</div>
+
+<!-- F1 -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:#6C757D">1</div>
+    <div class="phase-info">
+      <div class="phase-name">Diagnóstico</div>
+      <div class="phase-meta">1 sesión · Sin costo</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="g2" style="margin:12px 0">
+      <div class="mini"><div class="mini-lbl">Qué hacemos</div><div class="mini-val">Sesión para mapear tu operación, identificar el proceso con mayor impacto, y evaluar el estado de tu información.</div></div>
+      <div class="mini"><div class="mini-lbl">Qué recibes</div><div class="mini-val">Propuesta con el problema identificado, la solución recomendada, timeline y precio.</div></div>
+    </div>
+    <div class="lbl">Lo que necesitamos de ti</div>
+    <div class="row"><div class="dot dg"></div><div class="rt">60 minutos de tu tiempo — sin preparación previa necesaria.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Acceso a ver cómo operas hoy (sistemas, Excel, herramientas que uses).</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Tu aprobación de la propuesta antes de avanzar.</div></div>
+  </div>
+</div>
+
+<!-- F2 -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--accent2)">2</div>
+    <div class="phase-info">
+      <div class="phase-name">Propuesta y cierre</div>
+      <div class="phase-meta">2–3 días después del diagnóstico</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="g2" style="margin:12px 0">
+      <div class="mini"><div class="mini-lbl">Qué hacemos</div><div class="mini-val">Presentamos la propuesta con alcance, timeline, y precio. Respondemos dudas.</div></div>
+      <div class="mini"><div class="mini-lbl">Qué recibes</div><div class="mini-val">Documento de propuesta. Si aceptas, se firma y se agenda el inicio.</div></div>
+    </div>
+    <div class="info"><strong>Principio:</strong> Si no aceptas, no hay compromiso. La propuesta tiene validez de 15 días.</div>
+  </div>
+</div>
+
+<!-- F3 -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--i)">3</div>
+    <div class="phase-info">
+      <div class="phase-name">Especificación</div>
+      <div class="phase-meta">3–5 días · Incluido en el setup</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="g2" style="margin:12px 0">
+      <div class="mini"><div class="mini-lbl">Qué hacemos</div><div class="mini-val">Recopilamos toda la información de tu negocio: catálogos, precios, reglas, accesos a sistemas.</div></div>
+      <div class="mini"><div class="mini-lbl">Qué recibes</div><div class="mini-val">Confirmación de que tenemos todo para diseñar tu sistema.</div></div>
+    </div>
+    <div class="lbl">Lo que necesitamos de ti</div>
+    <div class="row"><div class="dot dg"></div><div class="rt">La información de tu negocio: listas, precios, reglas de operación, contactos.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Accesos a los sistemas que usas actualmente (si los hay).</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Un punto de contacto disponible para preguntas durante estos días.</div></div>
+  </div>
+</div>
+
+<!-- F4 -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--accent3)">4</div>
+    <div class="phase-info">
+      <div class="phase-name">Diseño del sistema</div>
+      <div class="phase-meta">2–3 días · Incluido en el setup</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="g2" style="margin:12px 0">
+      <div class="mini"><div class="mini-lbl">Qué hacemos</div><div class="mini-val">Diseñamos cómo funciona el sistema: qué hace solo, qué te llega a ti, cómo se ve tu panel.</div></div>
+      <div class="mini"><div class="mini-lbl">Qué recibes</div><div class="mini-val">Blueprint del sistema para tu aprobación antes de construir.</div></div>
+    </div>
+    <div class="warn"><strong>Principio:</strong> No construimos nada sin tu aprobación previa. El blueprint requiere tu firma antes de avanzar. Si algo no representa bien tu negocio, lo corregimos.</div>
+  </div>
+</div>
+
+<!-- F5 -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--accent)">5</div>
+    <div class="phase-info">
+      <div class="phase-name">Construcción</div>
+      <div class="phase-meta">Variable según proyecto · Incluido en el setup</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="g2" style="margin:12px 0">
+      <div class="mini"><div class="mini-lbl">Qué hacemos</div><div class="mini-val">Construimos el sistema con el conocimiento de tu negocio. Demos semanales para que veas avances reales.</div></div>
+      <div class="mini"><div class="mini-lbl">Qué recibes</div><div class="mini-val">Demos parciales + sistema completo en ambiente de prueba al final.</div></div>
+    </div>
+    <div class="info"><strong>Cómo funciona:</strong> No esperas semanas para ver algo. Cada semana tienes una demo para probar y dar retroalimentación. Tus ajustes se incorporan antes de continuar.</div>
+  </div>
+</div>
+
+<!-- F6 -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--s)">6</div>
+    <div class="phase-info">
+      <div class="phase-name">Entrega</div>
+      <div class="phase-meta">3–5 días · Incluido en el setup</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="g2" style="margin:12px 0">
+      <div class="mini"><div class="mini-lbl">Qué hacemos</div><div class="mini-val">Sistema en producción, capacitación, y 2 semanas de acompañamiento intensivo.</div></div>
+      <div class="mini"><div class="mini-lbl">Qué recibes</div><div class="mini-val">Sistema activo + sesión de capacitación + soporte prioritario 2 semanas.</div></div>
+    </div>
+    <div class="tip"><strong>Garantía:</strong> Si la capacitación tarda más de 60 minutos, el sistema está mal diseñado — y lo rediseñamos sin costo adicional.</div>
+  </div>
+</div>
+
+<!-- F7 -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--accent3)">7</div>
+    <div class="phase-info">
+      <div class="phase-name">Operación continua — fee mensual</div>
+      <div class="phase-meta">Desde el mes 2 en adelante</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="lbl">Qué incluye cada mes</div>
+    <div class="row"><div class="dot dg"></div><div class="rt"><strong>Monitoreo continuo:</strong> verificamos que el sistema opera sin errores ni caídas.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt"><strong>Hasta 3 ajustes técnicos:</strong> cambios de información, nuevas configuraciones, ajuste de flujos.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt"><strong>Soporte:</strong> WhatsApp con respuesta en menos de 24 horas hábiles.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt"><strong>Respaldo de datos:</strong> tu información respaldada con regularidad.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt"><strong>Compatibilidad continua:</strong> mantenemos el sistema actualizado sin interrupciones.</div></div>
+    <div class="div"></div>
+    <div class="lbl">Qué NO incluye el fee</div>
+    <div class="row"><div class="dot dr"></div><div class="rt">Más de 3 ajustes técnicos al mes — el cuarto se cotiza por separado.</div></div>
+    <div class="row"><div class="dot dr"></div><div class="rt">Agregar nuevos procesos, agentes, o módulos — cotización separada.</div></div>
+    <div class="row"><div class="dot dr"></div><div class="rt">Cambios que impliquen rediseño del sistema — nuevo proyecto.</div></div>
+    <div class="div"></div>
+    <div class="lbl">Estructura del fee</div>
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>Fijo — Infraestructura:</strong> hosting, base de datos, respaldos. Al costo + 20% buffer. Transparente.</div></div>
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>Fijo — Mantenimiento y soporte:</strong> monitoreo, bugs, ajustes, comunicación.</div></div>
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>Variable — Consumo IA:</strong> créditos de API al costo + 20% buffer. Reportado mes a mes.</div></div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODO 3: USO INTERNO
+══════════════════════════════════════════ -->
+<div id="s-interno" class="sec">
+
+<div class="qb">
+  <div class="qt">Guía operativa de Solemia. Cada fase tiene: qué hace Andrés, qué hace Mario, qué necesita el cliente, y qué puede salir mal. Léanlo antes de cada proyecto nuevo.</div>
+</div>
+
+<!-- F1 INTERNO -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:#6C757D">F1</div>
+    <div class="phase-info">
+      <div class="phase-name">Diagnóstico</div>
+      <div class="phase-meta">1 sesión · Gratis · Pre-proyecto</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="ig">
+      <div>
+        <div class="ig-title">Andrés hace</div>
+        <div class="row"><div class="dot da"></div><div class="rt">Agenda y conduce la sesión con el prospecto</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Ejecuta los 3 bloques del diagnóstico: problema, estado de datos, naturaleza del proceso</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Toma notas estructuradas en Notion</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Mario hace</div>
+        <div class="row"><div class="dot di"></div><div class="rt">Revisa el resumen del diagnóstico</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Valida si es técnicamente viable con el stack actual</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">No tiene contacto con el cliente</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Cliente hace</div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Asiste a la sesión de 60 min</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Muestra cómo opera hoy</div></div>
+      </div>
+    </div>
+    <div class="warn"><strong>Señal de alerta:</strong> Si el prospecto no puede describir el problema en términos de tiempo o dinero perdido, el dolor no es suficientemente grande.</div>
+  </div>
+</div>
+
+<!-- F2 INTERNO -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--accent2)">F2</div>
+    <div class="phase-info">
+      <div class="phase-name">Estimación interna + Propuesta + Cierre</div>
+      <div class="phase-meta">2–3 días · Pre-proyecto · El cliente no ve la estimación</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="ig">
+      <div>
+        <div class="ig-title">Andrés hace</div>
+        <div class="row"><div class="dot da"></div><div class="rt"><strong>Llena la Calculadora Post-Diagnóstico</strong> con las variables gruesas del diagnóstico</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Obtiene: clasificación, horas, piso, techo, precio sugerido, fee, timeline</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Revisa pipeline actual para confirmar timeline de construcción</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Redacta y envía la propuesta en 48h</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Hace seguimiento hasta obtener aprobación o rechazo (máx 5 días)</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Mario hace</div>
+        <div class="row"><div class="dot di"></div><div class="rt">Valida la estimación de horas que Andrés sacó de la calculadora</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Confirma disponibilidad en su pipeline</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Cliente hace</div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Recibe la propuesta</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Aprueba o rechaza en máx 5 días</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Si aprueba: firma + primer pago</div></div>
+      </div>
+    </div>
+    <div class="tip"><strong>Herramienta:</strong> La Calculadora Post-Diagnóstico genera el precio sugerido, el timeline, y un resumen copiable para la propuesta. El cliente nunca ve horas, tarifa, ni piso/techo.</div>
+    <div class="lbl">Checklist de cierre</div>
+    <div class="check"><div class="check-box"></div>Calculadora llenada y validada por Mario</div>
+    <div class="check"><div class="check-box"></div>Propuesta enviada al cliente</div>
+    <div class="check"><div class="check-box"></div>Aprobación escrita recibida</div>
+    <div class="check"><div class="check-box"></div>Primer pago cobrado antes de avanzar a F3</div>
+  </div>
+</div>
+
+<!-- F3 INTERNO -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--i)">F3</div>
+    <div class="phase-info">
+      <div class="phase-name">Especificación</div>
+      <div class="phase-meta">3–5 días · Post-firma · Se cobra</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="ig">
+      <div>
+        <div class="ig-title">Andrés hace</div>
+        <div class="row"><div class="dot da"></div><div class="rt">Coordina con el cliente para recopilar toda la información</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Estructura el spec completo: entidades con campos, reglas exactas, flujos detallados</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Documenta en formato que Mario puede leer y ejecutar</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Mario hace</div>
+        <div class="row"><div class="dot di"></div><div class="rt">Revisa el spec por viabilidad técnica</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Señala ambigüedades o datos faltantes</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Confirma cronograma de construcción</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Cliente hace</div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Entrega información: listas, precios, porcentajes, catálogos</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Da accesos a sistemas existentes</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Disponible para preguntas 3–5 días</div></div>
+      </div>
+    </div>
+    <div class="note"><strong>Si el alcance cambia:</strong> Si durante la especificación se descubre que el alcance real es significativamente mayor al estimado, se tiene una conversación honesta con el cliente antes de diseñar. Ajuste de precio si es necesario.</div>
+  </div>
+</div>
+
+<!-- F4 INTERNO -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--accent3)">F4</div>
+    <div class="phase-info">
+      <div class="phase-name">Diseño</div>
+      <div class="phase-meta">2–3 días · Requiere aprobación para avanzar</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="ig">
+      <div>
+        <div class="ig-title">Andrés hace</div>
+        <div class="row"><div class="dot da"></div><div class="rt">Redacta el blueprint en lenguaje que el cliente entienda</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Presenta al cliente y obtiene aprobación escrita</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Mario hace</div>
+        <div class="row"><div class="dot di"></div><div class="rt">Diseña la arquitectura técnica</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Define qué módulos del Base Kit se reutilizan</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Mapa de integraciones y APIs</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Cliente hace</div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Revisa el blueprint — máx 3 días para feedback</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Aprueba por escrito</div></div>
+      </div>
+    </div>
+    <div class="warn"><strong>Regla crítica:</strong> Nunca empezar la construcción sin aprobación escrita del blueprint. Cambios después se cotizan aparte.</div>
+  </div>
+</div>
+
+<!-- F5 INTERNO -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--accent)">F5</div>
+    <div class="phase-info">
+      <div class="phase-name">Construcción</div>
+      <div class="phase-meta">Variable · Demos semanales</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="ig">
+      <div>
+        <div class="ig-title">Andrés hace</div>
+        <div class="row"><div class="dot da"></div><div class="rt">Coordina demos semanales con el cliente</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Recoge feedback y prioriza para Mario</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Distingue ajuste incluido vs scope adicional</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Cobra el pago restante antes de entregar</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Mario hace</div>
+        <div class="row"><div class="dot di"></div><div class="rt">Clona Base Kit, activa módulos, configura entidades</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Construye lógica de negocio custom</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Demo funcional cada semana</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Incorpora ajustes del feedback</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Cliente hace</div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Prueba las demos semanales</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Da feedback específico</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Aprueba el sistema final</div></div>
+      </div>
+    </div>
+    <div class="info"><strong>Regla de scope:</strong> Ajustes al contenido aprobado en el blueprint están incluidos. Funcionalidades nuevas que no estaban en el blueprint se cotizan aparte antes de ejecutar.</div>
+  </div>
+</div>
+
+<!-- F6 INTERNO -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--s)">F6</div>
+    <div class="phase-info">
+      <div class="phase-name">Entrega</div>
+      <div class="phase-meta">3–5 días · 2 semanas de acompañamiento · 100% cobrado</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="ig">
+      <div>
+        <div class="ig-title">Andrés hace</div>
+        <div class="row"><div class="dot da"></div><div class="rt">Conduce capacitación — máx 60 min</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Seguimiento diario primera semana</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Activa el fee mensual</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Mario hace</div>
+        <div class="row"><div class="dot di"></div><div class="rt">Migra de prueba a producción</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Monitoreo técnico primeras 48h</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Incidencias <4h primeras 2 semanas</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Documenta arquitectura en expediente</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Cliente hace</div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Asiste a capacitación</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Reporta incidencias 2 semanas</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- F7 INTERNO -->
+<div class="phase">
+  <div class="phase-head" onclick="tog(this)">
+    <div class="phase-num" style="background:var(--accent3)">F7</div>
+    <div class="phase-info">
+      <div class="phase-name">Operación continua — fee mensual</div>
+      <div class="phase-meta">Mensual · Ciclo de 30 días</div>
+    </div>
+    <div class="phase-arrow">▼</div>
+  </div>
+  <div class="phase-body">
+    <div class="ig">
+      <div>
+        <div class="ig-title">Andrés</div>
+        <div class="row"><div class="dot da"></div><div class="rt">Comunicación con el cliente</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Prioriza ajustes del mes</div></div>
+        <div class="row"><div class="dot da"></div><div class="rt">Detecta oportunidades de expansión (Fase B, nuevos procesos)</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Mario</div>
+        <div class="row"><div class="dot di"></div><div class="rt">Monitoreo técnico semanal</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Ejecuta hasta 3 ajustes/mes</div></div>
+        <div class="row"><div class="dot di"></div><div class="rt">Incidencias <24h hábiles</div></div>
+      </div>
+      <div>
+        <div class="ig-title">Cliente recibe</div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Monitoreo continuo</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Hasta 3 ajustes/mes</div></div>
+        <div class="row"><div class="dot dg"></div><div class="rt">Soporte <24h hábiles</div></div>
+      </div>
+    </div>
+    <div class="lbl">Estructura del fee mensual</div>
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>Fijo — Infraestructura:</strong> al costo + 20% buffer. Transparente al cliente. $400–1,000/mes.</div></div>
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>Fijo — Mantenimiento y soporte:</strong> con margen. $1,500–3,500/mes según complejidad.</div></div>
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>Variable — Consumo IA:</strong> al costo + 20% buffer. Reportado mes a mes. $0–2,500/mes según línea.</div></div>
+  </div>
+</div>
+
+</div>
+
+</div><!-- /wrapper -->
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+function tog(head) {
+  const body = head.nextElementSibling;
+  const arrow = head.querySelector('.phase-arrow');
+  body.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open');
+}
+</script>
+</body>
+</html>

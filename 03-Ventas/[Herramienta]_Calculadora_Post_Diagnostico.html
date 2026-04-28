@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solemia — Calculadora Post-Diagnóstico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F9F6F8;--bg2:#F0ECF0;--surface:#fff;
+  --border:rgba(75,15,60,0.1);--border-mid:rgba(75,15,60,0.2);
+  --text:#252525;--text2:#5A4F58;--text3:#8A7F88;
+  --accent:#C32D4B;--accent2:#961E5A;--accent3:#4B0F3C;
+  --sg:#E8F5EE;--s:#1A7A45;--dg:#FCEEF1;--d:#A01F38;--wg:#FFF3E0;--w:#8B4500;
+  --ig:#EEF2FF;--i:#3B5998;--green:#2D6A4F;--green2:#40916C;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:2rem 1rem 4rem}
+.wrapper{max-width:820px;margin:0 auto}
+.header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border-mid)}
+.logo{font-family:'DM Serif Display',serif;font-size:28px;color:var(--accent3);letter-spacing:-0.5px}
+.logo span{color:var(--accent)}
+.hs{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding-bottom:4px}
+.tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;padding:8px 16px;border-radius:20px;border:0.5px solid var(--border-mid);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.tab.active{background:var(--accent3);color:#fff;border-color:var(--accent3);font-weight:500}
+.tab:hover:not(.active){background:var(--bg2)}
+.sec{display:none}.sec.active{display:block}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px}
+.ct{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.cs{font-size:13px;color:var(--text2);line-height:1.7}
+.qb{padding:1rem 1.25rem;border-left:2px solid var(--accent);background:var(--bg2);border-radius:0 8px 8px 0;margin-bottom:14px}
+.qt{font-family:'DM Serif Display',serif;font-size:14px;color:var(--text);line-height:1.65;font-style:italic}
+.div{height:0.5px;background:var(--border);margin:14px 0}
+.lbl{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;margin-top:14px}
+.stitle{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin-bottom:6px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:520px){.g2,.g3{grid-template-columns:1fr}}
+.pill{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:6px}
+.mini{background:var(--bg2);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.mini-lbl{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.mini-val{font-size:13px;color:var(--text);line-height:1.45}
+.mini-val strong{color:var(--accent)}
+.warn{background:var(--dg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--d);line-height:1.6}
+.warn strong{font-weight:600}
+.tip{background:var(--sg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--text);line-height:1.6}
+.tip strong{color:var(--s)}
+.note{background:var(--wg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--w);line-height:1.6}
+.note strong{font-weight:600}
+
+/* FORM ELEMENTS */
+.fg{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.fg-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.fg-num{width:24px;height:24px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.field{margin-bottom:10px}
+.field:last-child{margin-bottom:0}
+.field-label{font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.field-hint{font-size:11px;color:var(--text3);margin-top:2px;font-style:italic}
+.field-input{font-family:'DM Sans',system-ui,sans-serif;font-size:14px;color:var(--text);background:var(--bg);border:0.5px solid var(--border-mid);border-radius:8px;padding:8px 12px;width:100%;transition:border-color .15s}
+.field-input:focus{outline:none;border-color:var(--accent)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.field-row{grid-template-columns:1fr}}
+
+.selector{display:flex;gap:6px;flex-wrap:wrap}
+.sel-btn{font-family:'DM Sans',system-ui,sans-serif;font-size:12px;padding:7px 14px;border-radius:20px;border:0.5px solid var(--border-mid);background:var(--bg);color:var(--text2);cursor:pointer;transition:all .15s}
+.sel-btn:hover{background:var(--bg2);border-color:var(--accent2)}
+.sel-btn.active{background:var(--accent3);color:#fff;border-color:var(--accent3);font-weight:500}
+.sel-btn.l1.active{background:var(--green);border-color:var(--green)}
+.sel-btn.l2.active{background:var(--accent3);border-color:var(--accent3)}
+.sel-btn.l3.active{background:var(--accent);border-color:var(--accent)}
+
+.range-wrap{display:flex;align-items:center;gap:12px}
+.range-val{font-size:16px;font-weight:600;color:var(--accent);min-width:35px;text-align:center}
+input[type="range"]{-webkit-appearance:none;appearance:none;flex:1;height:4px;background:var(--bg2);border-radius:4px;outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent3);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+
+/* RESULT */
+.result-wrap{border-radius:14px;padding:1.5rem;margin:12px 0}
+.r-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.r-tag{display:inline-block;font-size:11px;padding:3px 12px;border-radius:20px;background:rgba(255,255,255,.2);color:#fff;font-weight:500}
+.r-total{text-align:right}
+.r-total-label{font-size:11px;color:rgba(255,255,255,.6)}
+.r-total-val{font-size:28px;font-weight:600;color:#fff}
+.r-total-sub{font-size:12px;color:rgba(255,255,255,.55)}
+.r-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+@media(max-width:500px){.r-grid{grid-template-columns:1fr}}
+.r-box{background:rgba(255,255,255,.1);border-radius:10px;padding:10px 12px}
+.r-box-lbl{font-size:10px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.r-box-val{font-size:16px;font-weight:500;color:#fff}
+.r-box-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+
+/* TIMELINE */
+.tl-bar{display:flex;gap:2px;margin:8px 0;border-radius:6px;overflow:hidden;height:32px}
+.tl-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:#fff;transition:flex .3s}
+
+/* PROPOSAL */
+.proposal-box{background:var(--surface);border:1.5px solid var(--accent);border-radius:14px;padding:1.5rem;margin-top:14px}
+.proposal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.proposal-logo{font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent3)}
+.proposal-logo span{color:var(--accent)}
+
+.btn{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;padding:8px 20px;border-radius:20px;border:0.5px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--accent);color:#fff}
+.btn-primary{background:var(--accent3);color:#fff;border-color:var(--accent3)}
+.btn-primary:hover{background:var(--accent2)}
+
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="header">
+  <div class="logo">solemia<span>.</span></div>
+  <div class="hs">Calculadora post-diagnóstico · 2026</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('input',this)">1. Datos del diagnóstico</button>
+  <button class="tab" onclick="show('result',this)">2. Resultado interno</button>
+  <button class="tab" onclick="show('timeline',this)">3. Timeline</button>
+  <button class="tab" onclick="show('proposal',this)">4. Resumen propuesta</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 1: INPUTS
+══════════════════════════════════════════ -->
+<div id="s-input" class="sec active">
+
+<div class="qb">
+  <div class="qt">Llena después del diagnóstico. Con las variables gruesas, no necesitas la especificación detallada — solo el conteo macro de lo que identificaste en la sesión.</div>
+</div>
+
+<!-- INFO BÁSICA -->
+<div class="fg">
+  <div class="fg-title"><span class="fg-num" style="background:var(--accent3)">1</span>Información básica</div>
+  <div class="field-row">
+    <div class="field">
+      <div class="field-label">Nombre del negocio</div>
+      <input class="field-input" type="text" id="in-negocio" placeholder="Ej: Clínica Dental Mérida">
+    </div>
+    <div class="field">
+      <div class="field-label">Contacto principal</div>
+      <input class="field-input" type="text" id="in-contacto" placeholder="Ej: Dr. Jonathan García">
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Problema principal identificado</div>
+    <input class="field-input" type="text" id="in-problema" placeholder="Ej: 1 hora manual por paciente para consolidar estado financiero">
+  </div>
+</div>
+
+<!-- LÍNEA DE SERVICIO -->
+<div class="fg">
+  <div class="fg-title"><span class="fg-num" style="background:var(--accent3)">2</span>Línea de servicio</div>
+  <div class="field">
+    <div class="field-label">¿Qué línea aplica?</div>
+    <div class="selector" id="sel-linea">
+      <button class="sel-btn l1" onclick="setLinea(1,this)">L1 — Automatización</button>
+      <button class="sel-btn l2" onclick="setLinea(2,this)">L2 — Empleados IA</button>
+      <button class="sel-btn l3" onclick="setLinea(3,this)">L3 — Sistema Inteligente</button>
+    </div>
+    <div class="field-hint">¿Datos estructurados + proceso predecible = L1. Datos + interpretación = L2. Sin datos = L3.</div>
+  </div>
+</div>
+
+<!-- VARIABLES L1 -->
+<div id="vars-l1" class="fg hidden">
+  <div class="fg-title"><span class="fg-num" style="background:var(--green)">3</span>Variables — Automatización</div>
+  <div class="field">
+    <div class="field-label">Número de flujos distintos</div>
+    <div class="range-wrap">
+      <input type="range" id="l1-flujos" min="1" max="10" value="2" oninput="updR(this,'v-l1-flujos')">
+      <div class="range-val" id="v-l1-flujos">2</div>
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Complejidad promedio de los flujos</div>
+    <div class="selector" id="sel-l1-comp">
+      <button class="sel-btn l1 active" onclick="selG('sel-l1-comp',this,1)">Lineal</button>
+      <button class="sel-btn l1" onclick="selG('sel-l1-comp',this,2)">Condicional</button>
+      <button class="sel-btn l1" onclick="selG('sel-l1-comp',this,3)">Multi-herramienta</button>
+    </div>
+    <div class="field-hint">Lineal = trigger → acción. Condicional = bifurcaciones. Multi-herramienta = cadenas entre varios servicios.</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Número de herramientas/servicios a conectar</div>
+    <div class="range-wrap">
+      <input type="range" id="l1-tools" min="1" max="8" value="2" oninput="updR(this,'v-l1-tools')">
+      <div class="range-val" id="v-l1-tools">2</div>
+    </div>
+  </div>
+</div>
+
+<!-- VARIABLES L2 -->
+<div id="vars-l2" class="fg hidden">
+  <div class="fg-title"><span class="fg-num" style="background:var(--accent3)">3</span>Variables — Empleados IA</div>
+  <div class="field">
+    <div class="field-label">Capa 1 — Tipo de sistema</div>
+    <div class="selector" id="sel-l2-tipo">
+      <button class="sel-btn l2 active" onclick="selG('sel-l2-tipo',this,1)">Agente único</button>
+      <button class="sel-btn l2" onclick="selG('sel-l2-tipo',this,2)">Multi-agente (2–3)</button>
+      <button class="sel-btn l2" onclick="selG('sel-l2-tipo',this,3)">Multi-agente (4+)</button>
+    </div>
+  </div>
+  <div class="field" id="f-l2-org" style="display:none">
+    <div class="field-label">Capa 2 — Organización</div>
+    <div class="selector" id="sel-l2-org">
+      <button class="sel-btn l2 active" onclick="selG('sel-l2-org',this,1)">Secuencial</button>
+      <button class="sel-btn l2" onclick="selG('sel-l2-org',this,2)">Paralelo</button>
+      <button class="sel-btn l2" onclick="selG('sel-l2-org',this,3)">Jerárquico</button>
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Capa 4 — ¿Toca dinero, datos fiscales, o inventario?</div>
+    <div class="selector" id="sel-l2-neuro">
+      <button class="sel-btn l2 active" onclick="selG('sel-l2-neuro',this,0)">No</button>
+      <button class="sel-btn l2" onclick="selG('sel-l2-neuro',this,1)">Sí — neuro-simbólico</button>
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Capa 5 — ¿El cliente necesita aprobar antes de que el agente actúe?</div>
+    <div class="selector" id="sel-l2-hitl">
+      <button class="sel-btn l2" onclick="selG('sel-l2-hitl',this,0)">No — autónomo</button>
+      <button class="sel-btn l2 active" onclick="selG('sel-l2-hitl',this,1)">Sí — human-in-the-loop</button>
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Complejidad de conexión a datos</div>
+    <div class="selector" id="sel-l2-data">
+      <button class="sel-btn l2 active" onclick="selG('sel-l2-data',this,1)">API / Supabase directo</button>
+      <button class="sel-btn l2" onclick="selG('sel-l2-data',this,2)">Excel / CSV</button>
+      <button class="sel-btn l2" onclick="selG('sel-l2-data',this,3)">Sistema legacy</button>
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Canales</div>
+    <div class="selector" id="sel-l2-canales">
+      <button class="sel-btn l2 active" onclick="selG('sel-l2-canales',this,1)">1 canal</button>
+      <button class="sel-btn l2" onclick="selG('sel-l2-canales',this,2)">2 canales</button>
+      <button class="sel-btn l2" onclick="selG('sel-l2-canales',this,3)">3+ canales</button>
+    </div>
+  </div>
+</div>
+
+<!-- VARIABLES L3 -->
+<div id="vars-l3" class="fg hidden">
+  <div class="fg-title"><span class="fg-num" style="background:var(--accent)">3</span>Variables — Sistema Inteligente</div>
+  <div class="field">
+    <div class="field-label">Entidades del modelo de datos (¿cuántas "cosas" gestiona el negocio?)</div>
+    <div class="range-wrap">
+      <input type="range" id="l3-ent" min="2" max="15" value="6" oninput="updR(this,'v-l3-ent')">
+      <div class="range-val" id="v-l3-ent">6</div>
+    </div>
+    <div class="field-hint">Pacientes, doctores, pagos, laboratorios, camiones, viajes, inventario... cada "cosa" es 1.</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Reglas de negocio complejas</div>
+    <div class="range-wrap">
+      <input type="range" id="l3-reglas" min="0" max="8" value="2" oninput="updR(this,'v-l3-reglas')">
+      <div class="range-val" id="v-l3-reglas">2</div>
+    </div>
+    <div class="field-hint">Distribuciones de pago, cálculos encadenados, lógica con excepciones por actor.</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Vistas del panel</div>
+    <div class="field-row">
+      <div>
+        <div class="field-label" style="font-size:11px;color:var(--text3)">Simples (lista + filtros)</div>
+        <div class="range-wrap">
+          <input type="range" id="l3-vs" min="0" max="8" value="3" oninput="updR(this,'v-l3-vs')">
+          <div class="range-val" id="v-l3-vs">3</div>
+        </div>
+      </div>
+      <div>
+        <div class="field-label" style="font-size:11px;color:var(--text3)">Complejas (cálculos, agrupaciones)</div>
+        <div class="range-wrap">
+          <input type="range" id="l3-vc" min="0" max="6" value="1" oninput="updR(this,'v-l3-vc')">
+          <div class="range-val" id="v-l3-vc">1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Roles de usuario</div>
+    <div class="selector" id="sel-l3-roles">
+      <button class="sel-btn l3 active" onclick="selG('sel-l3-roles',this,1)">1 (dueño)</button>
+      <button class="sel-btn l3" onclick="selG('sel-l3-roles',this,2)">2–3</button>
+      <button class="sel-btn l3" onclick="selG('sel-l3-roles',this,3)">4+</button>
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Migración de datos</div>
+    <div class="selector" id="sel-l3-migra">
+      <button class="sel-btn l3" onclick="selG('sel-l3-migra',this,0)">No hay</button>
+      <button class="sel-btn l3 active" onclick="selG('sel-l3-migra',this,1)">Excel limpio</button>
+      <button class="sel-btn l3" onclick="selG('sel-l3-migra',this,2)">Desordenado</button>
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Capa de inteligencia Fase A</div>
+    <div class="selector" id="sel-l3-ia">
+      <button class="sel-btn l3" onclick="selG('sel-l3-ia',this,0)">Sin IA</button>
+      <button class="sel-btn l3 active" onclick="selG('sel-l3-ia',this,1)">Básica (NLP + alertas)</button>
+      <button class="sel-btn l3" onclick="selG('sel-l3-ia',this,2)">Completa</button>
+    </div>
+  </div>
+</div>
+
+<!-- VALOR DEL PROBLEMA -->
+<div class="fg">
+  <div class="fg-title"><span class="fg-num" style="background:var(--accent3)">4</span>Valor del problema</div>
+  <div class="field-row">
+    <div class="field">
+      <div class="field-label">Horas/semana que el cliente gasta en este problema</div>
+      <input class="field-input" type="number" id="in-hrs-prob" placeholder="Ej: 10" value="10">
+    </div>
+    <div class="field">
+      <div class="field-label">Costo estimado por hora del cliente (MXN)</div>
+      <input class="field-input" type="number" id="in-costo-hr" placeholder="Ej: 200" value="200">
+    </div>
+  </div>
+  <div class="field">
+    <div class="field-label">Pérdidas adicionales no rastreadas al mes (MXN, estimado)</div>
+    <input class="field-input" type="number" id="in-perdidas" placeholder="Ej: 5000" value="0">
+  </div>
+  <div class="field">
+    <div class="field-label">Tarifa interna de Solemia (MXN/hora)</div>
+    <input class="field-input" type="number" id="in-tarifa" placeholder="Ej: 300" value="300">
+    <div class="field-hint">(Costo equipo + gastos fijos) ÷ 268 hrs/mes</div>
+  </div>
+</div>
+
+<div style="text-align:center;margin-top:16px">
+  <button class="btn btn-primary" style="font-size:14px;padding:10px 28px" onclick="calcular();show('result',document.querySelectorAll('.tab')[1])">
+    Calcular →
+  </button>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 2: RESULTADO INTERNO
+══════════════════════════════════════════ -->
+<div id="s-result" class="sec">
+
+<div class="qb">
+  <div class="qt">Este resultado es interno. El cliente no ve horas, ni tarifa, ni piso/techo. Ve el precio final y el timeline.</div>
+</div>
+
+<div class="result-wrap" id="r-main" style="background:var(--accent3)">
+  <div class="r-header">
+    <div>
+      <div class="r-tag" id="r-clasificacion">—</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.75);margin-top:4px" id="r-negocio">—</div>
+    </div>
+    <div class="r-total">
+      <div class="r-total-label">Horas estimadas</div>
+      <div class="r-total-val" id="r-hrs">0</div>
+      <div class="r-total-sub" id="r-rango-hrs">—</div>
+    </div>
+  </div>
+  <div class="r-grid">
+    <div class="r-box">
+      <div class="r-box-lbl">Costo interno</div>
+      <div class="r-box-val" id="r-costo">$0</div>
+    </div>
+    <div class="r-box">
+      <div class="r-box-lbl">Piso (×1.5)</div>
+      <div class="r-box-val" id="r-piso">$0</div>
+    </div>
+    <div class="r-box">
+      <div class="r-box-lbl">Techo</div>
+      <div class="r-box-val" id="r-techo">$0</div>
+    </div>
+  </div>
+  <div class="r-grid">
+    <div class="r-box">
+      <div class="r-box-lbl">Valor problema / mes</div>
+      <div class="r-box-val" id="r-valor">$0</div>
+    </div>
+    <div class="r-box">
+      <div class="r-box-lbl">Precio sugerido (setup)</div>
+      <div class="r-box-val" id="r-precio" style="font-size:20px">$0</div>
+    </div>
+    <div class="r-box">
+      <div class="r-box-lbl">Fee mensual estimado</div>
+      <div class="r-box-val" id="r-fee">$0</div>
+    </div>
+  </div>
+</div>
+
+<div id="r-warnings"></div>
+
+<div class="card">
+  <div class="ct">Desglose de horas</div>
+  <div id="r-desglose" class="cs">—</div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 3: TIMELINE
+══════════════════════════════════════════ -->
+<div id="s-timeline" class="sec">
+
+<div class="qb">
+  <div class="qt">Ingresa cuántas horas diarias puede recibir este proyecto según tu pipeline actual. De ahí sale el timeline de entrega para el cliente.</div>
+</div>
+
+<div class="fg">
+  <div class="field">
+    <div class="field-label">Horas diarias asignadas a este proyecto (Mario)</div>
+    <div class="range-wrap">
+      <input type="range" id="tl-hrs" min="2" max="7" value="4" step="0.5" oninput="updR(this,'v-tl-hrs');calcTimeline()">
+      <div class="range-val" id="v-tl-hrs">4</div>
+    </div>
+    <div class="field-hint">Mín 2 hrs (bloque mínimo). Sprint = 6+. Sostenido = 3–4.</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Modo</div>
+    <div id="tl-modo" style="font-size:14px;font-weight:500;color:var(--accent);margin-top:4px">Sostenido</div>
+  </div>
+</div>
+
+<div class="stitle">Timeline de entrega</div>
+
+<div class="card">
+  <div class="tl-bar" id="tl-bar"></div>
+  <div class="g2" style="margin-top:10px" id="tl-fases"></div>
+  <div class="div"></div>
+  <div style="text-align:center">
+    <div class="lbl">Timeline total para el cliente</div>
+    <div style="font-size:28px;font-weight:600;color:var(--accent)" id="tl-total">—</div>
+  </div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 4: RESUMEN PROPUESTA
+══════════════════════════════════════════ -->
+<div id="s-proposal" class="sec">
+
+<div class="qb">
+  <div class="qt">Resumen limpio para usar como base de la propuesta. Copiable. Sin datos internos.</div>
+</div>
+
+<div class="proposal-box" id="prop-box">
+  <div class="proposal-header">
+    <div class="proposal-logo">solemia<span>.</span></div>
+    <div style="font-size:11px;color:var(--text3)" id="prop-fecha">—</div>
+  </div>
+  <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin-bottom:4px" id="prop-titulo">—</div>
+  <div style="font-size:13px;color:var(--accent2);font-weight:500;margin-bottom:14px" id="prop-linea">—</div>
+  
+  <div class="lbl">Problema identificado</div>
+  <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px" id="prop-problema">—</div>
+  
+  <div class="lbl">Lo que se va a resolver</div>
+  <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px" id="prop-solucion">—</div>
+  
+  <div class="g2" style="margin-bottom:12px">
+    <div class="mini">
+      <div class="mini-lbl">Timeline de entrega</div>
+      <div class="mini-val" id="prop-timeline" style="font-weight:500">—</div>
+    </div>
+    <div class="mini">
+      <div class="mini-lbl">Inversión (setup)</div>
+      <div class="mini-val" id="prop-precio" style="font-weight:500">—</div>
+    </div>
+  </div>
+  <div class="mini">
+    <div class="mini-lbl">Fee mensual</div>
+    <div class="mini-val" id="prop-fee" style="font-weight:500">—</div>
+  </div>
+</div>
+
+<div style="margin-top:12px;display:flex;gap:8px">
+  <button class="btn" onclick="copyProposal()">Copiar como texto</button>
+</div>
+
+</div>
+
+</div><!-- /wrapper -->
+
+<script>
+const S = {
+  linea: 0,
+  l1: { flujos: 2, comp: 1, tools: 2 },
+  l2: { tipo: 1, org: 1, neuro: 0, hitl: 1, data: 1, canales: 1 },
+  l3: { ent: 6, reglas: 2, vs: 3, vc: 1, roles: 1, migra: 1, ia: 1 },
+  hrsProb: 10, costoHr: 200, perdidas: 0, tarifa: 300,
+  // Results
+  hrsMin: 0, hrsMax: 0, hrsMid: 0, clasificacion: '', costoInt: 0, piso: 0, techo: 0, precioSugerido: 0, feeMin: 0, feeMax: 0, valorProblema: 0
+};
+
+function show(id, btn) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'timeline') calcTimeline();
+  if (id === 'proposal') renderProposal();
+}
+
+function setLinea(n, btn) {
+  S.linea = n;
+  document.querySelectorAll('#sel-linea .sel-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('vars-l1').classList.toggle('hidden', n !== 1);
+  document.getElementById('vars-l2').classList.toggle('hidden', n !== 2);
+  document.getElementById('vars-l3').classList.toggle('hidden', n !== 3);
+}
+
+function selG(gid, btn, val) {
+  document.querySelectorAll('#' + gid + ' .sel-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const map = {
+    'sel-l1-comp': ['l1','comp'], 'sel-l2-tipo': ['l2','tipo'], 'sel-l2-org': ['l2','org'],
+    'sel-l2-neuro': ['l2','neuro'], 'sel-l2-hitl': ['l2','hitl'], 'sel-l2-data': ['l2','data'],
+    'sel-l2-canales': ['l2','canales'], 'sel-l3-roles': ['l3','roles'], 'sel-l3-migra': ['l3','migra'],
+    'sel-l3-ia': ['l3','ia']
+  };
+  if (map[gid]) { S[map[gid][0]][map[gid][1]] = val; }
+  if (gid === 'sel-l2-tipo') {
+    document.getElementById('f-l2-org').style.display = val >= 2 ? 'block' : 'none';
+  }
+}
+
+function updR(el, vid) {
+  document.getElementById(vid).textContent = el.value;
+  const map = {
+    'l1-flujos': ['l1','flujos'], 'l1-tools': ['l1','tools'],
+    'l3-ent': ['l3','ent'], 'l3-reglas': ['l3','reglas'], 'l3-vs': ['l3','vs'], 'l3-vc': ['l3','vc']
+  };
+  if (map[el.id]) S[map[el.id][0]][map[el.id][1]] = parseFloat(el.value);
+}
+
+function calcular() {
+  S.hrsProb = parseFloat(document.getElementById('in-hrs-prob').value) || 0;
+  S.costoHr = parseFloat(document.getElementById('in-costo-hr').value) || 0;
+  S.perdidas = parseFloat(document.getElementById('in-perdidas').value) || 0;
+  S.tarifa = parseFloat(document.getElementById('in-tarifa').value) || 300;
+
+  let hMin = 0, hMax = 0, clasif = '', desglose = '';
+
+  if (S.linea === 1) {
+    const f = S.l1.flujos, c = S.l1.comp, t = S.l1.tools;
+    const basePerFlow = c === 1 ? 5 : c === 2 ? 8 : 12;
+    const toolAdj = Math.max(0, (t - 2)) * 2;
+    hMin = Math.round(f * basePerFlow * 0.8 + toolAdj);
+    hMax = Math.round(f * basePerFlow * 1.3 + toolAdj * 1.5);
+    hMin = Math.max(hMin, 8);
+    if (hMax <= 15) clasif = 'L1 Simple';
+    else if (hMax <= 35) clasif = 'L1 Media';
+    else clasif = 'L1 Compleja';
+    desglose = `${f} flujos × ~${basePerFlow} hrs/flujo (${c===1?'lineal':c===2?'condicional':'multi-herramienta'}) + ${t} herramientas`;
+  }
+  else if (S.linea === 2) {
+    let base = S.l2.tipo === 1 ? 15 : S.l2.tipo === 2 ? 30 : 55;
+    let top = S.l2.tipo === 1 ? 25 : S.l2.tipo === 2 ? 55 : 90;
+    let adj = 0;
+    if (S.l2.neuro) adj += 8;
+    if (S.l2.hitl) adj += 5;
+    if (S.l2.data >= 2) adj += 4;
+    if (S.l2.data >= 3) adj += 6;
+    if (S.l2.canales >= 2) adj += 5;
+    if (S.l2.canales >= 3) adj += 8;
+    if (S.l2.tipo >= 2 && S.l2.org >= 2) adj += 6;
+    hMin = base + Math.round(adj * 0.5);
+    hMax = top + adj;
+    if (S.l2.tipo === 1 && hMax <= 30) clasif = 'L2 Agente único simple';
+    else if (hMax <= 55) clasif = 'L2 Agente único complejo / Multi-agente básico';
+    else clasif = 'L2 Multi-agente complejo';
+    const tipoStr = S.l2.tipo === 1 ? 'Agente único' : S.l2.tipo === 2 ? 'Multi-agente (2–3)' : 'Multi-agente (4+)';
+    desglose = `${tipoStr} · ${S.l2.neuro?'con':'sin'} neuro-simbólico · ${S.l2.hitl?'con':'sin'} HITL · ${S.l2.canales} canal(es) · conexión: ${S.l2.data===1?'API':S.l2.data===2?'Excel':'legacy'}`;
+  }
+  else if (S.linea === 3) {
+    const ent = S.l3.ent * 5;
+    const reg = S.l3.reglas * 9;
+    const vs = S.l3.vs * 3.5;
+    const vc = S.l3.vc * 8.5;
+    const roles = Math.max(0, (S.l3.roles - 1)) * (S.l3.roles === 2 ? 4 : 8);
+    const migra = S.l3.migra === 0 ? 0 : S.l3.migra === 1 ? 5 : 16;
+    const ia = S.l3.ia === 0 ? 0 : S.l3.ia === 1 ? 12 : 18;
+    const total = ent + reg + vs + vc + roles + migra + ia;
+    hMin = Math.round(total * 0.8);
+    hMax = Math.round(total * 1.25);
+    if (hMax <= 65) clasif = 'L3 S — Sistema chico';
+    else if (hMax <= 130) clasif = 'L3 M — Sistema mediano';
+    else clasif = 'L3 L — Sistema grande';
+    desglose = `${S.l3.ent} entidades · ${S.l3.reglas} reglas complejas · ${S.l3.vs} vistas simples + ${S.l3.vc} complejas · ${S.l3.roles===1?'1 rol':S.l3.roles===2?'2–3 roles':'4+ roles'} · migración: ${S.l3.migra===0?'no':S.l3.migra===1?'limpia':'desordenada'} · IA: ${S.l3.ia===0?'sin':S.l3.ia===1?'básica':'completa'}`;
+  }
+
+  const hrsMid = Math.round((hMin + hMax) / 2);
+  S.hrsMin = hMin; S.hrsMax = hMax; S.hrsMid = hrsMid; S.clasificacion = clasif;
+
+  // Costs
+  S.costoInt = Math.round(hrsMid * S.tarifa);
+  S.piso = Math.round(S.costoInt * 1.5);
+  S.valorProblema = Math.round((S.hrsProb * 4.33 * S.costoHr) + S.perdidas);
+
+  // Fee estimate
+  if (S.linea === 1) { S.feeMin = 1500; S.feeMax = 3500; }
+  else if (S.linea === 2) { S.feeMin = 2500; S.feeMax = 5500; }
+  else { S.feeMin = 2000; S.feeMax = 4500; }
+  const feeMid = Math.round((S.feeMin + S.feeMax) / 2);
+
+  // Techo
+  const payback = 6;
+  S.techo = Math.round((S.valorProblema * payback) - (feeMid * payback));
+  if (S.techo < 0) S.techo = 0;
+
+  // Precio sugerido
+  const precioTecho = Math.round(S.techo * 0.67);
+  S.precioSugerido = Math.max(precioTecho, S.piso);
+
+  // Render
+  const neg = document.getElementById('in-negocio').value || '—';
+  document.getElementById('r-clasificacion').textContent = clasif;
+  document.getElementById('r-negocio').textContent = neg;
+  document.getElementById('r-hrs').textContent = hrsMid + ' hrs';
+  document.getElementById('r-rango-hrs').textContent = `Rango: ${hMin}–${hMax} hrs`;
+  document.getElementById('r-costo').textContent = '$' + S.costoInt.toLocaleString();
+  document.getElementById('r-piso').textContent = '$' + S.piso.toLocaleString();
+  document.getElementById('r-techo').textContent = '$' + S.techo.toLocaleString();
+  document.getElementById('r-valor').textContent = '$' + S.valorProblema.toLocaleString();
+  document.getElementById('r-precio').textContent = '$' + S.precioSugerido.toLocaleString();
+  document.getElementById('r-fee').textContent = '$' + S.feeMin.toLocaleString() + '–' + S.feeMax.toLocaleString();
+  document.getElementById('r-desglose').textContent = desglose;
+
+  // Color
+  const bgColor = S.linea === 1 ? 'var(--green)' : S.linea === 2 ? 'var(--accent3)' : 'var(--accent)';
+  document.getElementById('r-main').style.background = bgColor;
+
+  // Warnings
+  let warns = '';
+  if (S.techo < S.piso) {
+    warns += '<div class="warn"><strong>El techo queda por debajo del piso.</strong> El valor cuantificable del problema no justifica el setup. Opciones: mejorar la cuantificación del dolor, ofrecer como descuento estratégico con condiciones (caso + testimonial + 6 meses mínimo), o revisar si el proyecto vale la pena.</div>';
+  }
+  if (S.valorProblema < 3000) {
+    warns += '<div class="note"><strong>Valor del problema bajo.</strong> Verifica que la cuantificación incluya todas las pérdidas — no solo el tiempo, también errores, clientes perdidos, oportunidades.</div>';
+  }
+  document.getElementById('r-warnings').innerHTML = warns;
+}
+
+function calcTimeline() {
+  const hrsDay = parseFloat(document.getElementById('tl-hrs').value) || 4;
+  document.getElementById('tl-modo').textContent = hrsDay >= 6 ? 'Sprint' : hrsDay >= 4 ? 'Sostenido' : 'Sostenido lento';
+  document.getElementById('tl-modo').style.color = hrsDay >= 6 ? 'var(--s)' : 'var(--accent)';
+
+  const specDays = S.linea === 3 ? 4 : 2;
+  const designDays = S.linea === 3 ? 3 : 2;
+  const buildDays = Math.ceil(S.hrsMid / hrsDay);
+  const deliverDays = S.linea === 3 ? 4 : 2;
+  const totalDays = specDays + designDays + buildDays + deliverDays;
+  const totalWeeks = Math.ceil(totalDays / 5);
+
+  const total = specDays + designDays + buildDays + deliverDays;
+  const phases = [
+    { name: 'Especificación', days: specDays, color: '#6C757D' },
+    { name: 'Diseño', days: designDays, color: 'var(--i)' },
+    { name: 'Construcción', days: buildDays, color: S.linea===1?'var(--green)':S.linea===2?'var(--accent3)':'var(--accent)' },
+    { name: 'Entrega', days: deliverDays, color: 'var(--s)' }
+  ];
+
+  let barHTML = '';
+  phases.forEach(p => {
+    const pct = (p.days / total) * 100;
+    barHTML += `<div class="tl-seg" style="flex:${p.days};background:${p.color}">${p.name}<br>${p.days}d</div>`;
+  });
+  document.getElementById('tl-bar').innerHTML = barHTML;
+
+  let fasesHTML = '';
+  phases.forEach(p => {
+    fasesHTML += `<div class="mini"><div class="mini-lbl">${p.name}</div><div class="mini-val"><strong>${p.days} días</strong> hábiles</div></div>`;
+  });
+  document.getElementById('tl-fases').innerHTML = fasesHTML;
+
+  document.getElementById('tl-total').textContent = totalWeeks + (totalWeeks === 1 ? ' semana' : ' semanas') + ` (${totalDays} días hábiles)`;
+}
+
+function renderProposal() {
+  const neg = document.getElementById('in-negocio').value || '—';
+  const contacto = document.getElementById('in-contacto').value || '—';
+  const prob = document.getElementById('in-problema').value || '—';
+  const today = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long' });
+
+  document.getElementById('prop-fecha').textContent = today;
+  document.getElementById('prop-titulo').textContent = 'Propuesta para ' + neg;
+  
+  const lineaNames = { 1: 'Automatización de Procesos', 2: 'Empleados IA', 3: 'Sistema Inteligente a la Medida' };
+  document.getElementById('prop-linea').textContent = lineaNames[S.linea] || '—';
+  document.getElementById('prop-problema').textContent = prob;
+
+  const hrsDay = parseFloat(document.getElementById('tl-hrs').value) || 4;
+  const specDays = S.linea === 3 ? 4 : 2;
+  const designDays = S.linea === 3 ? 3 : 2;
+  const buildDays = Math.ceil(S.hrsMid / hrsDay);
+  const deliverDays = S.linea === 3 ? 4 : 2;
+  const totalWeeks = Math.ceil((specDays + designDays + buildDays + deliverDays) / 5);
+
+  document.getElementById('prop-timeline').textContent = totalWeeks + (totalWeeks === 1 ? ' semana' : ' semanas');
+  document.getElementById('prop-precio').textContent = '$' + S.precioSugerido.toLocaleString() + ' MXN';
+  document.getElementById('prop-fee').textContent = '$' + S.feeMin.toLocaleString() + '–' + S.feeMax.toLocaleString() + ' MXN / mes';
+
+  let sol = '';
+  if (S.linea === 1) sol = 'Automatización de los procesos identificados para eliminar el trabajo manual repetitivo. Flujos que se ejecutan solos, sin intervención humana, cada vez que se activa el trigger definido.';
+  else if (S.linea === 2) sol = 'Uno o varios empleados IA que reciben el objetivo definido y lo resuelven: perciben los datos del negocio, razonan sobre lo que encuentran, y ejecutan las acciones necesarias.';
+  else sol = 'Un sistema de gestión diseñado para la lógica específica del negocio, con inteligencia integrada. Panel de control, base de datos, roles y permisos. El humano opera y controla todo — la IA reduce la fricción.';
+  document.getElementById('prop-solucion').textContent = sol;
+}
+
+function copyProposal() {
+  const neg = document.getElementById('in-negocio').value || '—';
+  const prob = document.getElementById('in-problema').value || '—';
+  const sol = document.getElementById('prop-solucion').textContent;
+  const tl = document.getElementById('prop-timeline').textContent;
+  const precio = document.getElementById('prop-precio').textContent;
+  const fee = document.getElementById('prop-fee').textContent;
+  const lineaNames = { 1: 'Automatización de Procesos', 2: 'Empleados IA', 3: 'Sistema Inteligente a la Medida' };
+
+  const text = `PROPUESTA — ${neg.toUpperCase()}
+Servicio: ${lineaNames[S.linea]}
+
+Problema identificado:
+${prob}
+
+Lo que se va a resolver:
+${sol}
+
+Timeline de entrega: ${tl}
+Inversión (setup): ${precio}
+Fee mensual: ${fee}`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('#s-proposal .btn');
+    btn.textContent = '✓ Copiado';
+    setTimeout(() => btn.textContent = 'Copiar como texto', 2000);
+  });
+}
+</script>
+</body>
+</html>

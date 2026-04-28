@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solemia — Framework de Líneas de Servicio V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F9F6F8;--bg2:#F0ECF0;--surface:#fff;
+  --border:rgba(75,15,60,0.1);--border-mid:rgba(75,15,60,0.2);
+  --text:#252525;--text2:#5A4F58;--text3:#8A7F88;
+  --accent:#C32D4B;--accent2:#961E5A;--accent3:#4B0F3C;
+  --sg:#E8F5EE;--s:#1A7A45;--dg:#FCEEF1;--d:#A01F38;--wg:#FFF3E0;--w:#8B4500;
+  --ig:#EEF2FF;--i:#3B5998;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:2rem 1rem 4rem}
+.wrapper{max-width:820px;margin:0 auto}
+.header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border-mid)}
+.logo{font-family:'DM Serif Display',serif;font-size:28px;color:var(--accent3);letter-spacing:-0.5px}
+.logo span{color:var(--accent)}
+.hs{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding-bottom:4px}
+.tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{font-family:'DM Sans',system-ui,sans-serif;font-size:13px;padding:8px 16px;border-radius:20px;border:0.5px solid var(--border-mid);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.tab.active{background:var(--accent3);color:#fff;border-color:var(--accent3);font-weight:500}
+.tab:hover:not(.active){background:var(--bg2)}
+.sec{display:none}.sec.active{display:block}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px}
+.ct{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.cs{font-size:13px;color:var(--text2);line-height:1.7}
+.ac{border:1.5px solid var(--accent);border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px;background:var(--surface)}
+.qb{padding:1rem 1.25rem;border-left:2px solid var(--accent);background:var(--bg2);border-radius:0 8px 8px 0;margin-bottom:14px}
+.qt{font-family:'DM Serif Display',serif;font-size:14px;color:var(--text);line-height:1.65;font-style:italic}
+.div{height:0.5px;background:var(--border);margin:14px 0}
+.lbl{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;margin-top:14px}
+.stitle{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);margin-bottom:6px}
+.row{display:flex;gap:8px;margin-bottom:7px;align-items:flex-start}
+.dot{width:5px;height:5px;border-radius:50%;margin-top:7px;flex-shrink:0}
+.da{background:var(--accent)}.dg{background:var(--s)}.dr{background:var(--d)}.dw{background:var(--w)}.di{background:var(--i)}
+.rt{font-size:13px;color:var(--text2);line-height:1.6}
+.rt strong{color:var(--text);font-weight:500}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:520px){.g2,.g3{grid-template-columns:1fr}}
+.pill{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:6px}
+.pg{background:var(--sg);color:var(--s)}
+.pr{background:var(--dg);color:var(--d)}
+.pw{background:var(--wg);color:var(--w)}
+.pa{background:var(--accent3);color:#fff}
+.pi{background:var(--ig);color:var(--i)}
+.warn{background:var(--dg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--d);line-height:1.6}
+.warn strong{font-weight:600}
+.tip{background:var(--sg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--text);line-height:1.6}
+.tip strong{color:var(--s)}
+.note{background:var(--wg);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--w);line-height:1.6}
+.note strong{font-weight:600}
+.info{background:var(--ig);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:12px;color:var(--i);line-height:1.6}
+.info strong{font-weight:600}
+.linea-header{border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:12px}
+.linea-header h2{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;margin-bottom:2px}
+.linea-header p{font-size:13px;color:rgba(255,255,255,.8)}
+.l1-bg{background:linear-gradient(135deg,#2D6A4F,#40916C)}
+.l2-bg{background:linear-gradient(135deg,var(--accent3),var(--accent2))}
+.l3-bg{background:linear-gradient(135deg,var(--accent),#E85D6F)}
+.ej{background:var(--surface);border:0.5px solid var(--border);border-radius:10px;padding:.85rem 1rem;margin-bottom:8px}
+.ej-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.ej-pre{font-size:11px;font-weight:500;margin-bottom:2px}
+.ej-desc{font-size:12px;color:var(--text2);line-height:1.55}
+.nivel{border-radius:12px;overflow:hidden;margin-bottom:10px;border:0.5px solid var(--border)}
+.nivel-head{padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.nivel-name{font-size:15px;font-weight:500;color:#fff}
+.nivel-range{font-size:12px;color:rgba(255,255,255,.8);font-weight:500}
+.nivel-body{padding:1rem 1.25rem}
+.mini{background:var(--bg2);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.mini-lbl{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.mini-val{font-size:13px;color:var(--text);line-height:1.45}
+.mini-val strong{color:var(--accent)}
+.comp{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px}
+.comp th{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border-mid)}
+.comp td{padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text2);vertical-align:top}
+.comp td strong{color:var(--text);font-weight:500}
+.comp tr:last-child td{border-bottom:none}
+.formula{background:var(--accent3);border-radius:10px;padding:1rem 1.25rem;margin:10px 0;color:#fff;font-size:13px;line-height:1.7}
+.formula strong{font-weight:600;color:#fff}
+.formula em{color:rgba(255,255,255,.7);font-style:normal}
+.formula-title{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.5);margin-bottom:6px;font-weight:500}
+.diag-q{font-family:'DM Serif Display',serif;font-size:15px;color:var(--text);text-align:center;margin:14px 0 10px;line-height:1.5}
+.diag-opts{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+.diag-opt{flex:1;min-width:180px;max-width:350px;border-radius:10px;padding:1rem;text-align:center}
+.diag-opt h4{font-size:13px;font-weight:600;margin-bottom:4px}
+.diag-opt p{font-size:12px;line-height:1.5}
+.diag-yes{background:var(--sg);border:1px solid rgba(26,122,69,.15);color:var(--s)}
+.diag-no{background:var(--wg);border:1px solid rgba(139,69,0,.15);color:var(--w)}
+.diag-blue{background:var(--ig);border:1px solid rgba(59,89,152,.15);color:var(--i)}
+@media print{.tabs{display:none!important}.sec{display:block!important;page-break-before:always}.sec:first-of-type{page-break-before:avoid}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="header">
+  <div class="logo">solemia<span>.</span></div>
+  <div class="hs">Framework de líneas de servicio · V2 · 2026</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('def',this)">Definición</button>
+  <button class="tab" onclick="show('diag',this)">Diagnóstico</button>
+  <button class="tab" onclick="show('est',this)">Estimación</button>
+  <button class="tab" onclick="show('precio',this)">Pricing</button>
+  <button class="tab" onclick="show('accel',this)">Aceleración</button>
+  <button class="tab" onclick="show('agente',this)">Agente constructor ⚠︎</button>
+  <button class="tab" onclick="show('cap',this)">Gestión de capacidad</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 1: DEFINICIÓN
+════════════════════════════════════════════════════════ -->
+<div id="s-def" class="sec active">
+
+<div class="qb">
+  <div class="qt">Todo lo que Solemia vende se divide en tres líneas. La diferencia no es de grado — es de naturaleza: uno sigue instrucciones, otro toma decisiones, y el tercero construye la base para que los dos primeros puedan existir.</div>
+</div>
+
+<div class="formula">
+  <div class="formula-title">La división fundamental</div>
+  <strong>Automatización</strong> = le dices cómo hacer la tarea paso a paso. Ejecuta sin pensar.<br>
+  <strong>Empleados IA</strong> = le dices qué resultado quieres. Él determina el cómo.<br>
+  <strong>Sistemas Inteligentes</strong> = no hay datos sobre qué operar. Se construye la base primero.
+</div>
+
+<!-- LÍNEA 1 — AUTOMATIZACIÓN -->
+<div class="linea-header l1-bg">
+  <h2>Línea 1 — Automatización de Procesos</h2>
+  <p>Flujos fijos que ejecutan sin pensar. Si pasa X, haz Y.</p>
+</div>
+
+<div class="card">
+  <div class="ct">Qué es</div>
+  <div class="cs">Un flujo de trabajo fijo que conecta herramientas y mueve datos siguiendo reglas exactas que nosotros programamos. Lógica pura de "si pasa X, haz Y." No piensa, no improvisa, no interpreta. Si algo sale del camino esperado, se detiene o falla.</div>
+</div>
+
+<div class="card">
+  <div class="ct">Cuándo es la solución correcta</div>
+  <div class="row"><div class="dot dg"></div><div class="rt">La tarea es <strong>repetitiva y predecible</strong></div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt">Los datos de entrada son <strong>estructurados</strong> (formularios, campos de CRM, hojas de cálculo)</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt">No se requiere <strong>interpretar lenguaje natural</strong> ni tomar decisiones ambiguas</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt">El proceso <strong>casi nunca cambia</strong></div></div>
+</div>
+
+<div class="card">
+  <div class="ct">Stack</div>
+  <div class="cs">n8n, Make, Zapier, scripts en Python, APIs directas.</div>
+</div>
+
+<div class="lbl">Ejemplos concretos</div>
+
+<div class="ej">
+  <div class="ej-name">Confirmación automática de citas</div>
+  <div class="ej-desc">Cliente agenda en Google Calendar → el sistema le envía automáticamente un WhatsApp con fecha, hora y dirección. Si el cliente responde algo fuera de lo esperado, el sistema no sabe qué hacer.</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Sincronización de ventas con contabilidad</div>
+  <div class="ej-desc">Se registra una venta en Shopify → el flujo extrae cliente, monto y productos → crea la factura en el sistema contable.</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Notificaciones internas</div>
+  <div class="ej-desc">Cliente llena formulario de contacto en la web → aviso por Slack al equipo de ventas → tarjeta en el CRM. Todo mecánico.</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Publicación programada en redes</div>
+  <div class="ej-desc">Artículo se marca como "terminado" en Notion → el flujo toma título y enlace → lo publica en 3 redes a la hora programada. Siempre el mismo formato.</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Alerta de mantenimiento por kilometraje</div>
+  <div class="ej-desc">Camión llega a 20,000 km → el sistema genera alerta al gerente con la unidad y fecha sugerida de servicio.</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Reporte semanal automático</div>
+  <div class="ej-desc">Cada lunes a las 8am → el sistema consolida datos de ventas de la semana → genera PDF → lo envía por email al dueño.</div>
+</div>
+
+<div class="card" style="border-left:2px solid var(--d)">
+  <div class="ct">Lo que NO puede hacer</div>
+  <div class="row"><div class="dot dr"></div><div class="rt">Interpretar el tono o la intención de un mensaje</div></div>
+  <div class="row"><div class="dot dr"></div><div class="rt">Decidir entre dos opciones cuando no hay una regla clara</div></div>
+  <div class="row"><div class="dot dr"></div><div class="rt">Adaptarse a un caso que no estaba previsto</div></div>
+  <div class="row"><div class="dot dr"></div><div class="rt">Manejar datos no estructurados (PDFs con formatos variables, correos con lenguaje libre, imágenes)</div></div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- LÍNEA 2 — EMPLEADOS IA -->
+<div class="linea-header l2-bg">
+  <h2>Línea 2 — Empleados IA</h2>
+  <p>Agentes que perciben, razonan y actúan. Le dices qué, no cómo.</p>
+</div>
+
+<div class="card">
+  <div class="ct">Qué es</div>
+  <div class="cs">Uno o varios agentes que reciben un objetivo y lo resuelven. Tienen la capacidad de <strong>percibir</strong> su entorno (leer datos, entender lenguaje), <strong>razonar</strong> sobre lo que encuentran (analizar, comparar, planificar) y <strong>actuar</strong> (ejecutar acciones con herramientas externas). La diferencia fundamental: a la automatización le dices cómo hacer la tarea paso a paso. Al empleado IA le dices qué resultado quieres y él determina el cómo.</div>
+</div>
+
+<div class="card">
+  <div class="ct">Cuándo es la solución correcta</div>
+  <div class="row"><div class="dot dg"></div><div class="rt">El proceso requiere <strong>interpretar lenguaje natural</strong></div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt">Hay que <strong>tomar decisiones con ambigüedad</strong></div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt">Los datos son <strong>no estructurados</strong> (PDFs, correos, imágenes, conversaciones)</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt">No se pueden prever <strong>todos los casos</strong> de antemano</div></div>
+</div>
+
+<div class="card">
+  <div class="ct">Los 4 componentes de cualquier agente</div>
+  <div class="g2">
+    <div class="mini"><div class="mini-lbl">Cerebro</div><div class="mini-val">El LLM que razona (GPT-4, Claude, etc.)</div></div>
+    <div class="mini"><div class="mini-lbl">Instrucciones</div><div class="mini-val">System prompt con personalidad, reglas y límites</div></div>
+    <div class="mini"><div class="mini-lbl">Herramientas</div><div class="mini-val">APIs y sistemas que el agente puede usar para actuar</div></div>
+    <div class="mini"><div class="mini-lbl">Memoria</div><div class="mini-val">Contexto que retiene entre interacciones</div></div>
+  </div>
+</div>
+
+<div class="lbl">Las 5 capas de diseño (interno)</div>
+
+<div class="card">
+  <div class="pill pa">Capa 1</div>
+  <div class="ct">Tipo de sistema: ¿uno o varios?</div>
+  <div class="cs"><strong>Agente único:</strong> un solo cerebro que maneja todo el ciclo — percibe, razona y actúa dentro de un mismo dominio. <strong>Multi-agente:</strong> varios cerebros especializados que colaboran. Se usa cuando el objetivo cruza varios dominios o el volumen de decisiones es demasiado para uno solo.</div>
+</div>
+
+<div class="card">
+  <div class="pill pa">Capa 2</div>
+  <div class="ct">Organización: ¿cómo se coordinan? (solo multi-agente)</div>
+  <div class="g2">
+    <div class="mini"><div class="mini-lbl">Secuencial</div><div class="mini-val">Línea de ensamblaje. A → B → C. Predecible.</div></div>
+    <div class="mini"><div class="mini-lbl">Paralelo</div><div class="mini-val">Subtareas simultáneas. Un sintetizador junta todo.</div></div>
+    <div class="mini"><div class="mini-lbl">Jerárquico</div><div class="mini-val">Un orquestador asigna tareas a sub-agentes.</div></div>
+    <div class="mini"><div class="mini-lbl">En red</div><div class="mini-val">Sin jefes. Flexible pero impredecible. Rara vez para pymes.</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="pill pa">Capa 3</div>
+  <div class="ct">Roles: ¿qué hace cada agente?</div>
+  <div class="cs">Cada agente tiene una especialidad. Un agente único generalmente combina 2–3 roles. En un sistema multi-agente, cada agente se especializa en uno solo.</div>
+</div>
+
+<div class="card">
+  <div class="pill pa">Capa 4</div>
+  <div class="ct">¿Tiene componentes neuro-simbólicos?</div>
+  <div class="cs"><strong>Sin:</strong> la IA maneja todo. <strong>Con:</strong> la IA razona y toma decisiones, pero las partes críticas donde no puede haber error (cálculos financieros, facturación, validación de datos) las ejecuta código tradicional. Para pymes casi siempre hay componentes neuro-simbólicos en todo lo que toca dinero, datos fiscales o inventario.</div>
+</div>
+
+<div class="card">
+  <div class="pill pa">Capa 5</div>
+  <div class="ct">¿Tiene human-in-the-loop?</div>
+  <div class="cs"><strong>Sin:</strong> el agente percibe, razona, decide y ejecuta sin pedir permiso. <strong>Con:</strong> el agente hace el 95% del trabajo pesado pero se detiene antes de ejecutar y espera aprobación humana.</div>
+  <div class="note"><strong>Nota comercial:</strong> el human-in-the-loop es la herramienta para vender sin miedo. "Él prepara todo, tú apruebas con un clic" elimina la objeción de pérdida de control. Se recomienda cuando el agente toca dinero, habla en nombre de la marca, toma decisiones legales, o el cliente simplemente no confía todavía.</div>
+</div>
+
+<div class="lbl">Ejemplos concretos</div>
+
+<div class="ej">
+  <div class="ej-name">Agente de atención por WhatsApp — Clínica dental</div>
+  <div class="ej-pre pi pill">Agente único · sin neuro-simbólico · con HITL parcial</div>
+  <div class="ej-desc">Recibe consultas por WhatsApp, revisa disponibilidad en el calendario del doctor y agenda la cita. Todo el flujo es un solo dominio.</div>
+</div>
+<div class="ej">
+  <div class="ej-name">NutriPal — Atención a pacientes</div>
+  <div class="ej-pre pi pill">Agente único · sin neuro-simbólico · sin HITL</div>
+  <div class="ej-desc">Atiende al paciente 24/7 basándose en su expediente nutricional real. Interpreta preguntas en lenguaje natural y responde con contexto clínico.</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Clasificación de facturas XML — Despacho contable</div>
+  <div class="ej-pre pi pill">Agente único · con neuro-simbólico · con HITL</div>
+  <div class="ej-desc">Recibe XMLs, la IA clasifica en la cuenta correcta, el código calcula impuestos. El contador revisa y aprueba antes de timbrar.</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Sistema de contenido para una marca</div>
+  <div class="ej-pre pi pill">Multi-agente secuencial · con HITL</div>
+  <div class="ej-desc">Agente investigador busca datos → redactor escribe → crítico revisa → sale el post final. El humano aprueba antes de publicar.</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Gestión de quejas — E-commerce</div>
+  <div class="ej-pre pi pill">Multi-agente jerárquico · con neuro-simbólico · con HITL</div>
+  <div class="ej-desc">Orquestador recibe la queja. Un agente revisa factura, otro revisa inventario, otro calcula si aplica reembolso (código), otro redacta respuesta. El gerente aprueba.</div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- LÍNEA 3 — SISTEMAS INTELIGENTES -->
+<div class="linea-header l3-bg">
+  <h2>Línea 3 — Sistemas Inteligentes a la Medida</h2>
+  <p>El cliente no tiene datos ordenados. Solemia construye el sistema y después activa la inteligencia.</p>
+</div>
+
+<div class="card">
+  <div class="ct">Qué es</div>
+  <div class="cs">El cliente no tiene datos estructurados. Opera con la operación fracturada — Excel disperso, papel, WhatsApp, o de memoria. No hay sobre qué montar automatizaciones ni empleados IA. Solemia construye un sistema de gestión diseñado para la lógica específica del negocio, con inteligencia nativa integrada.</div>
+</div>
+
+<div class="card">
+  <div class="ct">Qué entrega Solemia — en dos fases</div>
+  <div class="cs">
+    <strong>Fase A — El sistema.</strong> Base de datos, panel de control, lógica de negocio automatizada, roles y permisos. El humano opera y controla todo. La inteligencia de esta fase es de asistencia: consultas en lenguaje natural, pre-llenado inteligente, alertas proactivas.
+    <br><br>
+    <strong>Fase B — Automatizaciones y Empleados IA.</strong> Se activa cuando el sistema tiene datos confiables. Aquí se montan automatizaciones (Línea 1) y empleados IA (Línea 2) sobre la base que Solemia construyó. Cada proceso se cotiza como expansión.
+  </div>
+</div>
+
+<div class="lbl">Ejemplos concretos — proyectos reales</div>
+
+<div class="ej">
+  <div class="ej-name">Jonathan García — Clínica dental</div>
+  <div class="ej-pre pw pill">Operación fracturada: Excel fragmentado, expedientes físicos</div>
+  <div class="ej-desc"><strong>Fase A:</strong> Expediente financiero por paciente, distribución automática de pagos entre laboratorios y especialistas, panel con vista individual y general.<br><strong>Fase B:</strong> Automatización de alertas de saldo (L1) + Empleado IA que recibe comprobantes por WhatsApp y pre-registra pagos (L2).</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Mario Padilla — Fletes y materiales</div>
+  <div class="ej-pre pw pill">Operación fracturada: Excel por mes, registro manual</div>
+  <div class="ej-desc"><strong>Fase A:</strong> Archivo madre digital, CRM, gestión vehicular, cálculo de nómina por viajes, estados de cuenta.<br><strong>Fase B:</strong> Automatización de alertas de mantenimiento (L1) + Empleado IA que recibe reportes de viaje por WhatsApp (L2).</div>
+</div>
+<div class="ej">
+  <div class="ej-name">Xclusivité — Banquetes y renta de mobiliario</div>
+  <div class="ej-pre pw pill">Operación fracturada: Excel + WhatsApp + sistema perdido</div>
+  <div class="ej-desc"><strong>Fase A:</strong> Sistema unificado ventas-bodega-contabilidad, inventario con ciclo renta-retorno, panel gerencial.<br><strong>Fase B:</strong> Automatización de alertas de merma (L1) + Empleado IA que responde cotizaciones por WhatsApp consultando inventario real (L2).</div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- CONVIVENCIA -->
+<div class="stitle">Cómo conviven las tres líneas</div>
+
+<div class="card">
+  <div class="cs">No compiten. Muchos proyectos combinan las tres. Un Sistema Inteligente (L3) puede tener automatizaciones (L1) integradas desde el día 1 y activar empleados IA (L2) en Fase B. Un proyecto puede ser solo automatización, solo un empleado IA, o una combinación.</div>
+</div>
+
+<div class="card">
+  <div class="ct">La diferencia clave entre L1 y L2</div>
+  <div class="cs">Si el proceso siempre es igual y los datos son estructurados → <strong>Automatización</strong>. Si el proceso requiere interpretar, razonar, o manejar lo imprevisto → <strong>Empleado IA</strong>. Si no hay datos sobre qué operar → primero <strong>Sistema Inteligente</strong>.</div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 2: DIAGNÓSTICO
+════════════════════════════════════════════════════════ -->
+<div id="s-diag" class="sec">
+
+<div class="qb">
+  <div class="qt">La sesión de diagnóstico identifica tres cosas: el problema, el estado de los datos, y la naturaleza del proceso. De ahí sale qué línea aplica.</div>
+</div>
+
+<div class="stitle">Primer bloque — El problema</div>
+<div class="card">
+  <div class="row"><div class="dot da"></div><div class="rt">¿Qué proceso te consume más tiempo en el día a día?</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt">¿Qué información no puedes ver rápido cuando la necesitas?</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt">¿Dónde sientes que pierdes dinero o dejas ir oportunidades?</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt">¿Cuántas horas a la semana gasta tu equipo en eso?</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt">¿Cuánto estimarías que cuesta ese problema al mes?</div></div>
+</div>
+
+<div class="div"></div>
+
+<div class="stitle">Segundo bloque — Estado de los datos</div>
+<div class="card">
+  <div class="row"><div class="dot di"></div><div class="rt">¿Dónde vive la información de ese proceso hoy?</div></div>
+  <div class="row"><div class="dot di"></div><div class="rt">¿Esa información está actualizada y es confiable?</div></div>
+  <div class="row"><div class="dot di"></div><div class="rt">¿Usan algún sistema o software hoy para gestionar esto?</div></div>
+  <div class="row"><div class="dot di"></div><div class="rt">Si quisiera consultar el estado de un [paciente/pedido/cliente] ahora mismo, ¿cuánto tardaría?</div></div>
+</div>
+
+<div class="div"></div>
+
+<div class="stitle">Tercer bloque — Naturaleza del proceso</div>
+<div class="card">
+  <div class="row"><div class="dot dw"></div><div class="rt">¿Este proceso siempre se hace igual, o cambia según el caso?</div></div>
+  <div class="row"><div class="dot dw"></div><div class="rt">¿Requiere leer e interpretar mensajes, documentos, o conversaciones?</div></div>
+  <div class="row"><div class="dot dw"></div><div class="rt">¿Hay decisiones que tomar sobre la marcha, o todo sigue reglas fijas?</div></div>
+  <div class="row"><div class="dot dw"></div><div class="rt">¿Se pueden prever todos los casos posibles?</div></div>
+</div>
+
+<div class="div"></div>
+
+<div class="stitle">Árbol de decisión</div>
+
+<div class="diag-q">Pregunta 1: ¿El cliente tiene datos estructurados y accesibles?</div>
+
+<div class="diag-opts">
+  <div class="diag-opt diag-yes">
+    <h4>Sí</h4>
+    <p>Usa un software, CRM, ERP, o un Excel bien mantenido. La información es consultable.</p>
+  </div>
+  <div class="diag-opt diag-no">
+    <h4>No</h4>
+    <p>Operación fracturada. Excel disperso, papel, WhatsApp, de memoria.</p>
+  </div>
+</div>
+
+<div class="ac" style="text-align:center;border-color:var(--accent2);margin-bottom:18px">
+  <div class="pill" style="background:var(--accent2);color:#fff">Si no → Línea 3</div>
+  <div class="ct">Sistema Inteligente a la Medida</div>
+  <div class="cs">Se construye el sistema primero. L1 y L2 se activan después (Fase B).</div>
+</div>
+
+<div class="diag-q">Pregunta 2 (si sí): ¿El proceso es predecible o requiere interpretación?</div>
+
+<div class="diag-opts">
+  <div class="diag-opt diag-yes">
+    <h4>Predecible</h4>
+    <p>Siempre igual, datos estructurados, reglas fijas, sin ambigüedad.</p>
+  </div>
+  <div class="diag-opt diag-blue">
+    <h4>Requiere interpretación</h4>
+    <p>Lenguaje natural, decisiones ambiguas, datos no estructurados, casos imprevistos.</p>
+  </div>
+</div>
+
+<div class="g2">
+  <div class="ac" style="text-align:center;border-color:#40916C">
+    <div class="pill" style="background:#2D6A4F;color:#fff">Línea 1</div>
+    <div class="ct">Automatización de Procesos</div>
+  </div>
+  <div class="ac" style="text-align:center">
+    <div class="pill pa">Línea 2</div>
+    <div class="ct">Empleados IA</div>
+  </div>
+</div>
+
+<div class="note"><strong>Combinaciones:</strong> un mismo proyecto puede necesitar automatizaciones + empleados IA. La clínica dental puede necesitar confirmación automática de citas (L1) + agente que atiende consultas por WhatsApp (L2). El diagnóstico identifica todos los procesos y clasifica cada uno.</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 3: ESTIMACIÓN
+════════════════════════════════════════════════════════ -->
+<div id="s-est" class="sec">
+
+<div class="qb">
+  <div class="qt">Cada línea tiene sus propias variables de estimación. Automatizaciones se miden por flujos. Empleados IA se miden por las 5 capas. Sistemas Inteligentes se miden por entidades y lógica de negocio. Todas las estimaciones consideran Claude Code (~0.5× del desarrollo tradicional).</div>
+</div>
+
+<!-- AUTOMATIZACIÓN -->
+<div class="linea-header l1-bg">
+  <h2>Automatización de Procesos</h2>
+  <p>Se mide por número y complejidad de flujos</p>
+</div>
+
+<div class="nivel">
+  <div class="nivel-head" style="background:#2D6A4F">
+    <div class="nivel-name">Simple — 1–2 flujos lineales</div>
+    <div class="nivel-range">8–15 hrs · 3–5 días</div>
+  </div>
+  <div class="nivel-body">
+    <div class="row"><div class="dot dg"></div><div class="rt">Flujos directos tipo "trigger → acción". Sin condicionales complejos.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Ej: confirmación de cita, notificación interna, sincronización de datos entre 2 herramientas.</div></div>
+  </div>
+</div>
+
+<div class="nivel">
+  <div class="nivel-head" style="background:#40916C">
+    <div class="nivel-name">Media — 3–5 flujos con condicionales</div>
+    <div class="nivel-range">15–30 hrs · 1–2 semanas</div>
+  </div>
+  <div class="nivel-body">
+    <div class="row"><div class="dot dg"></div><div class="rt">Flujos con bifurcaciones tipo "si pagó con factura → ruta A, si no → ruta B".</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Ej: proceso de venta completo (registro → facturación → notificación → reporte), alertas multi-condición.</div></div>
+  </div>
+</div>
+
+<div class="nivel">
+  <div class="nivel-head" style="background:#1B4332">
+    <div class="nivel-name">Compleja — 6+ flujos multi-herramienta</div>
+    <div class="nivel-range">30–50 hrs · 2–3 semanas</div>
+  </div>
+  <div class="nivel-body">
+    <div class="row"><div class="dot dg"></div><div class="rt">Cadenas de flujos que conectan múltiples herramientas con lógica cruzada.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Ej: operación completa de un e-commerce (pedido → inventario → envío → factura → seguimiento → reporte).</div></div>
+  </div>
+</div>
+
+<div class="lbl">Variables y horas estimadas por variable</div>
+
+<table class="comp">
+  <tr><th>Variable</th><th>Estimación con Claude Code</th></tr>
+  <tr><td><strong>Flujo lineal</strong><br>Trigger → acción directa, sin bifurcaciones</td><td>~4–6 hrs / flujo</td></tr>
+  <tr><td><strong>Flujo condicional</strong><br>Bifurcaciones tipo "si X → ruta A, si no → ruta B"</td><td>~7–10 hrs / flujo</td></tr>
+  <tr><td><strong>Flujo multi-herramienta</strong><br>Cadena de pasos que conecta 3+ servicios</td><td>~10–14 hrs / flujo</td></tr>
+  <tr><td><strong>Integración adicional</strong><br>Cada API, webhook, o servicio externo nuevo</td><td>~2–4 hrs / integración</td></tr>
+  <tr><td><strong>Manejo de errores por flujo</strong><br>Reintentos, notificaciones de falla, fallbacks</td><td>~1–2 hrs / flujo</td></tr>
+  <tr><td><strong>Testing por flujo</strong><br>Pruebas con datos reales, edge cases</td><td>~1–3 hrs / flujo</td></tr>
+</table>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- EMPLEADOS IA -->
+<div class="linea-header l2-bg">
+  <h2>Empleados IA</h2>
+  <p>Se mide por las 5 capas de diseño</p>
+</div>
+
+<div class="nivel">
+  <div class="nivel-head" style="background:var(--accent3)">
+    <div class="nivel-name">Agente único simple</div>
+    <div class="nivel-range">15–25 hrs · 1–2 semanas</div>
+  </div>
+  <div class="nivel-body">
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>Capa 1:</strong> Agente único. <strong>Capa 4:</strong> Sin neuro-simbólico. <strong>Capa 5:</strong> Sin HITL o HITL simple.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Ej: agente de WhatsApp que responde consultas con datos del negocio, agente que responde reseñas de Google Maps.</div></div>
+  </div>
+</div>
+
+<div class="nivel">
+  <div class="nivel-head" style="background:var(--accent2)">
+    <div class="nivel-name">Agente único complejo o multi-agente básico</div>
+    <div class="nivel-range">30–55 hrs · 2–4 semanas</div>
+  </div>
+  <div class="nivel-body">
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>Capa 1:</strong> Agente único con múltiples herramientas, o 2–3 agentes secuenciales. <strong>Capa 4:</strong> Con neuro-simbólico. <strong>Capa 5:</strong> Con HITL.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Ej: agente de cobranza que analiza historial + redacta + espera aprobación, clasificación de facturas con cálculo de impuestos.</div></div>
+  </div>
+</div>
+
+<div class="nivel">
+  <div class="nivel-head" style="background:var(--accent)">
+    <div class="nivel-name">Multi-agente complejo</div>
+    <div class="nivel-range">55–90 hrs · 4–6 semanas</div>
+  </div>
+  <div class="nivel-body">
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>Capa 1:</strong> 4+ agentes. <strong>Capa 2:</strong> Jerárquico o paralelo. <strong>Capa 4:</strong> Con neuro-simbólico. <strong>Capa 5:</strong> Con HITL.</div></div>
+    <div class="row"><div class="dot dg"></div><div class="rt">Ej: gestión de quejas completa (clasificar + investigar + calcular + redactar + aprobar), operación de contenido multi-canal.</div></div>
+  </div>
+</div>
+
+<div class="lbl">Variables y horas estimadas por variable</div>
+
+<table class="comp">
+  <tr><th>Variable</th><th>Estimación con Claude Code</th></tr>
+  <tr><td><strong>Agente base (único, simple)</strong><br>Prompt + herramientas + conexión a datos + testing</td><td>~12–18 hrs base</td></tr>
+  <tr><td><strong>Agente adicional (multi-agente)</strong><br>Cada agente especializado después del primero</td><td>~8–12 hrs / agente</td></tr>
+  <tr><td><strong>Organización multi-agente</strong><br>Coordinación entre agentes (secuencial, paralelo, jerárquico)</td><td>Secuencial: ~3–5 hrs · Paralelo/Jerárquico: ~6–10 hrs</td></tr>
+  <tr><td><strong>Componente neuro-simbólico</strong><br>Código que valida/ejecuta lo que la IA decide (cálculos, facturas, inventario)</td><td>~6–10 hrs</td></tr>
+  <tr><td><strong>Human-in-the-loop</strong><br>Interfaz de aprobación + flujo de escalación</td><td>~4–6 hrs</td></tr>
+  <tr><td><strong>Conexión a datos — API / Supabase</strong><br>Fuente de datos bien estructurada y documentada</td><td>~3–5 hrs</td></tr>
+  <tr><td><strong>Conexión a datos — Excel / CSV</strong><br>Parseo y estructuración de datos</td><td>~5–8 hrs</td></tr>
+  <tr><td><strong>Conexión a datos — Sistema legacy</strong><br>Integración con sistema existente sin API clara</td><td>~8–14 hrs</td></tr>
+  <tr><td><strong>Canal adicional</strong><br>Cada canal después del primero (WhatsApp + email + webchat)</td><td>~4–6 hrs / canal</td></tr>
+  <tr><td><strong>Panel de supervisión</strong><br>Historial de conversaciones, métricas, configuración</td><td>~4–8 hrs</td></tr>
+</table>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- SISTEMA INTELIGENTE -->
+<div class="linea-header l3-bg">
+  <h2>Sistema Inteligente — Fase A</h2>
+  <p>Se mide por entidades, lógica de negocio, vistas y roles</p>
+</div>
+
+<div class="nivel">
+  <div class="nivel-head" style="background:var(--accent)">
+    <div class="nivel-name">S — Sistema chico</div>
+    <div class="nivel-range">40–60 hrs · 3–4 semanas</div>
+  </div>
+  <div class="nivel-body">
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>3–5 entidades</strong>, lógica simple, <strong>2–3 vistas</strong>, <strong>1 rol</strong></div></div>
+  </div>
+</div>
+
+<div class="nivel">
+  <div class="nivel-head" style="background:var(--accent2)">
+    <div class="nivel-name">M — Sistema mediano</div>
+    <div class="nivel-range">70–120 hrs · 4–6 semanas</div>
+  </div>
+  <div class="nivel-body">
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>6–10 entidades</strong>, lógica moderada, <strong>4–6 vistas</strong>, <strong>2–3 roles</strong></div></div>
+    <div class="row"><div class="dot dw"></div><div class="rt">Jonathan García: 7 entidades, 3 reglas complejas, 5 vistas, 2 roles → ~90–110 hrs</div></div>
+  </div>
+</div>
+
+<div class="nivel">
+  <div class="nivel-head" style="background:var(--accent3)">
+    <div class="nivel-name">L — Sistema grande</div>
+    <div class="nivel-range">120–200 hrs · 6–10 semanas</div>
+  </div>
+  <div class="nivel-body">
+    <div class="row"><div class="dot da"></div><div class="rt"><strong>10+ entidades</strong>, lógica compleja, <strong>7+ vistas</strong>, <strong>4+ roles</strong>, migración pesada</div></div>
+    <div class="row"><div class="dot dw"></div><div class="rt">Mario Padilla (M–L): ~130–160 hrs · Xclusivité (L): ~140–180 hrs</div></div>
+  </div>
+</div>
+
+<div class="lbl">Variables y horas estimadas por variable</div>
+<table class="comp">
+  <tr><th>Variable</th><th>Estimación con Claude Code</th></tr>
+  <tr><td><strong>Entidades del modelo de datos</strong></td><td>~4–6 hrs / entidad</td></tr>
+  <tr><td><strong>Reglas de negocio complejas</strong></td><td>~6–12 hrs / regla</td></tr>
+  <tr><td><strong>Vistas simples del panel</strong></td><td>~3–4 hrs / vista</td></tr>
+  <tr><td><strong>Vistas complejas del panel</strong></td><td>~7–10 hrs / vista</td></tr>
+  <tr><td><strong>Migración — limpia</strong></td><td>~3–6 hrs total</td></tr>
+  <tr><td><strong>Migración — desordenada</strong></td><td>~12–20 hrs total</td></tr>
+  <tr><td><strong>Roles adicionales</strong></td><td>~3–5 hrs / rol</td></tr>
+  <tr><td><strong>Capa de inteligencia Fase A</strong></td><td>~10–18 hrs total</td></tr>
+</table>
+
+<div class="note"><strong>Fase B</strong> se estima combinando Línea 1 + Línea 2 según los procesos a activar. Cada automatización y cada empleado IA se estima con sus propios parámetros.</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 4: PRICING
+════════════════════════════════════════════════════════ -->
+<div id="s-precio" class="sec">
+
+<div class="qb">
+  <div class="qt">El precio se compone de setup (una vez) + fee mensual (recurrente). Ambos se calculan con la lógica de piso y techo.</div>
+</div>
+
+<div class="stitle">Lógica del piso y techo</div>
+
+<div class="formula">
+  <div class="formula-title">Piso — lo mínimo sin perder dinero</div>
+  <strong>Costo interno × 1.5</strong><br>
+  <em>Costo interno = horas estimadas × tarifa interna (~$350–500 MXN). El ×1.5 garantiza margen mínimo de 50%.</em>
+</div>
+
+<div class="formula">
+  <div class="formula-title">Techo — lo máximo que el cliente percibe como justo</div>
+  <strong>(Valor mensual del problema × meses de payback) − (fee mensual × esos meses)</strong><br>
+  <em>Payback aceptable para pymes: 4–8 meses.</em>
+</div>
+
+<div class="formula" style="background:var(--accent2)">
+  <div class="formula-title">Precio objetivo</div>
+  <strong>60–75% del techo, nunca por debajo del piso</strong>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- SETUP AUTOMATIZACIÓN -->
+<div class="stitle">Setup — Automatización de Procesos</div>
+<div class="g3">
+  <div class="card" style="text-align:center">
+    <div class="pill" style="background:#2D6A4F;color:#fff">Simple</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text);margin:4px 0">$8–15k</div>
+    <div style="font-size:11px;color:var(--text3)">8–15 hrs · 3–5 días</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="pill" style="background:#40916C;color:#fff">Media</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text);margin:4px 0">$15–25k</div>
+    <div style="font-size:11px;color:var(--text3)">15–30 hrs · 1–2 sem</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="pill" style="background:#1B4332;color:#fff">Compleja</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text);margin:4px 0">$25–40k</div>
+    <div style="font-size:11px;color:var(--text3)">30–50 hrs · 2–3 sem</div>
+  </div>
+</div>
+
+<!-- SETUP EMPLEADOS IA -->
+<div class="stitle" style="margin-top:16px">Setup — Empleados IA</div>
+<div class="g3">
+  <div class="card" style="text-align:center">
+    <div class="pill pa">Agente único</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text);margin:4px 0">$15–30k</div>
+    <div style="font-size:11px;color:var(--text3)">15–25 hrs · 1–2 sem</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="pill pa">Multi-agente básico</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text);margin:4px 0">$30–50k</div>
+    <div style="font-size:11px;color:var(--text3)">30–55 hrs · 2–4 sem</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="pill pa">Multi-agente complejo</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text);margin:4px 0">$50–80k</div>
+    <div style="font-size:11px;color:var(--text3)">55–90 hrs · 4–6 sem</div>
+  </div>
+</div>
+
+<!-- SETUP SISTEMA INTELIGENTE (SIN CAMBIOS) -->
+<div class="stitle" style="margin-top:16px">Setup — Sistema Inteligente Fase A</div>
+<div class="g3">
+  <div class="card" style="text-align:center">
+    <div class="pill" style="background:var(--accent2);color:#fff">S</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text);margin:4px 0">$25–40k</div>
+    <div style="font-size:11px;color:var(--text3)">Piso: ~$21–33k</div>
+    <div style="font-size:11px;color:var(--text3)">40–60 hrs · 3–4 sem</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="pill" style="background:var(--accent2);color:#fff">M</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text);margin:4px 0">$45–70k</div>
+    <div style="font-size:11px;color:var(--text3)">Piso: ~$37–60k</div>
+    <div style="font-size:11px;color:var(--text3)">70–120 hrs · 4–6 sem</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="pill" style="background:var(--accent2);color:#fff">L</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text);margin:4px 0">$75–120k</div>
+    <div style="font-size:11px;color:var(--text3)">Piso: ~$63–105k</div>
+    <div style="font-size:11px;color:var(--text3)">120–200 hrs · 6–10 sem</div>
+  </div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- FEE MENSUAL — FICHAS POR SERVICIO -->
+<div class="stitle">Fee mensual — Fichas por servicio</div>
+
+<div class="qb">
+  <div class="qt">Cada ficha es autocontenida. Identifica el tipo de proyecto, lee su ficha de arriba a abajo, y llega al fee mensual sin consultar otra ficha.</div>
+</div>
+
+<!-- ═══ FICHA L1 ═══ -->
+<div class="linea-header l1-bg">
+  <h2>Ficha L1 — Automatización de Procesos</h2>
+</div>
+
+<div class="card">
+  <div class="ct">Infraestructura fija</div>
+  <table class="comp">
+    <tr><th>Herramienta</th><th>Costo/mes</th><th>¿Aplica?</th></tr>
+    <tr><td><strong>Vercel</strong> (panel)</td><td>$200</td><td>Siempre</td></tr>
+    <tr><td><strong>Supabase</strong> (BD)</td><td>$250</td><td>Siempre</td></tr>
+    <tr><td><strong>Respaldos</strong></td><td>$100</td><td>Siempre</td></tr>
+    <tr><td><strong>VPS para n8n</strong> (Railway/DO/Hetzner)</td><td>$150</td><td>Siempre en L1</td></tr>
+  </table>
+  <div class="mini"><div class="mini-lbl">Cálculo</div><div class="mini-val">($200 + $250 + $100 + $150) × 1.2 = <strong>$840/mes</strong></div></div>
+</div>
+
+<div class="card">
+  <div class="ct">Soporte mensual</div>
+  <div class="lbl">Paso 1 — Horas base según nivel</div>
+  <table class="comp">
+    <tr><th>Nivel</th><th>Horas/mes</th></tr>
+    <tr><td>Simple (1–2 flujos)</td><td>2 hrs</td></tr>
+    <tr><td>Media (3–5 flujos)</td><td>3 hrs</td></tr>
+    <tr><td>Compleja (6+ flujos)</td><td>4 hrs</td></tr>
+  </table>
+  <div class="lbl">Paso 2 — Sumar ajustadores si aplican</div>
+  <table class="comp">
+    <tr><th>Condición</th><th>+Horas</th></tr>
+    <tr><td>Algún flujo tiene paso que usa IA</td><td>+0.5</td></tr>
+    <tr><td>Conecta con sistema legacy del cliente</td><td>+1</td></tr>
+    <tr><td>4+ herramientas externas conectadas</td><td>+0.5</td></tr>
+  </table>
+  <div class="lbl">Paso 3 — Calcular costo</div>
+  <div class="mini"><div class="mini-lbl">Fórmula</div><div class="mini-val"><strong>(Horas base + ajustadores) × tarifa interna × 1.5 = costo de soporte</strong></div></div>
+  <div class="mini"><div class="mini-lbl">Ejemplo L1 Media sin ajustadores, tarifa $300</div><div class="mini-val">3 × $300 × 1.5 = <strong>$1,350/mes</strong></div></div>
+</div>
+
+<div class="card">
+  <div class="ct">Costos variables</div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>Consumo IA:</strong> $0 en la mayoría de casos. Solo si un paso del flujo usa LLM: ejecuciones de ese paso/mes × $0.10 × 1.2. Si ningún flujo usa IA: $0.</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>WhatsApp Meta:</strong> $0 si usa Evolution API o no usa WhatsApp. Si usa Meta Cloud API: conversaciones/mes × $1 × 1.2.</div></div>
+  <div class="g2" style="margin-top:8px">
+    <div class="mini" style="background:var(--sg)"><div class="mini-lbl" style="color:var(--s)">Evolution API (gratis)</div><div class="mini-val">Volumen bajo-medio, cliente inicia la conversación.</div></div>
+    <div class="mini" style="background:var(--ig)"><div class="mini-lbl" style="color:var(--i)">Meta Cloud API (con costo)</div><div class="mini-val">Verificación oficial, templates proactivos, alto volumen.</div></div>
+  </div>
+</div>
+
+<div class="formula" style="background:var(--green)">
+  <div class="formula-title">Fórmula final L1</div>
+  <strong>Fee = $840 + [(hrs base + ajustadores) × tarifa interna × 1.5] + consumo IA (si aplica) + WhatsApp Meta (si aplica) → redondear</strong><br><br>
+  <em>Ejemplo L1 Media, sin IA, sin WA Meta, tarifa $300:<br>$840 + (3 × $300 × 1.5) + $0 + $0 = $840 + $1,350 = $2,190 →</em> <strong>$2,200/mes</strong>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- ═══ FICHA L2 ═══ -->
+<div class="linea-header l2-bg">
+  <h2>Ficha L2 — Empleados IA</h2>
+</div>
+
+<div class="card">
+  <div class="ct">Infraestructura fija</div>
+  <table class="comp">
+    <tr><th>Herramienta</th><th>Costo/mes</th><th>¿Aplica?</th></tr>
+    <tr><td><strong>Vercel</strong> (panel)</td><td>$200</td><td>Siempre</td></tr>
+    <tr><td><strong>Supabase</strong> (BD)</td><td>$250</td><td>Siempre</td></tr>
+    <tr><td><strong>Respaldos</strong></td><td>$100</td><td>Siempre</td></tr>
+    <tr><td><strong>Hosting agente</strong></td><td>$200 (placeholder)</td><td>Siempre en L2</td></tr>
+    <tr><td><strong>VPS para n8n</strong></td><td>$150</td><td>Solo si combina con automatizaciones</td></tr>
+  </table>
+  <div class="g2">
+    <div class="mini"><div class="mini-lbl">Sin n8n</div><div class="mini-val">($200+$250+$100+$200) × 1.2 = <strong>$900/mes</strong></div></div>
+    <div class="mini"><div class="mini-lbl">Con n8n</div><div class="mini-val">($200+$250+$100+$200+$150) × 1.2 = <strong>$1,080/mes</strong></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="ct">Soporte mensual</div>
+  <div class="lbl">Paso 1 — Horas base según nivel</div>
+  <table class="comp">
+    <tr><th>Nivel</th><th>Horas/mes</th></tr>
+    <tr><td>Agente único simple</td><td>3.5 hrs</td></tr>
+    <tr><td>Agente único complejo / Multi-ag básico</td><td>5 hrs</td></tr>
+    <tr><td>Multi-agente complejo</td><td>6.5 hrs</td></tr>
+  </table>
+  <div class="lbl">Paso 2 — Sumar ajustadores si aplican</div>
+  <table class="comp">
+    <tr><th>Condición</th><th>+Horas</th></tr>
+    <tr><td>Tiene neuro-simbólico (toca dinero, facturas, inventario)</td><td>+1</td></tr>
+    <tr><td>Tiene HITL (interfaz de aprobación)</td><td>+0.5</td></tr>
+    <tr><td>2+ canales (WhatsApp + email + webchat)</td><td>+0.5</td></tr>
+    <tr><td>Conecta con sistema legacy del cliente</td><td>+1</td></tr>
+  </table>
+  <div class="lbl">Paso 3 — Calcular costo</div>
+  <div class="mini"><div class="mini-lbl">Fórmula</div><div class="mini-val"><strong>(Horas base + ajustadores) × tarifa interna × 1.5 = costo de soporte</strong></div></div>
+  <div class="mini"><div class="mini-lbl">Ejemplo L2 Agente único + neuro + HITL, tarifa $300</div><div class="mini-val">(3.5 + 1 + 0.5) × $300 × 1.5 = 5 × $450 = <strong>$2,250/mes</strong></div></div>
+</div>
+
+<div class="card">
+  <div class="ct">Costos variables</div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>Consumo IA:</strong> siempre aplica en L2 — es el cerebro del agente.</div></div>
+  <div class="lbl">Cómo calcular</div>
+  <div class="row"><div class="dot dg"></div><div class="rt">1. ¿Cuántos clientes/pacientes/leads atiende el negocio al mes? → N</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt">2. N × interacciones promedio por conversación (~3–5) = interacciones/mes</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt">3. Interacciones × costo por interacción × 1.2 = consumo IA</div></div>
+  <table class="comp" style="margin-top:6px">
+    <tr><th>Modelo</th><th>Costo/interacción</th><th>Cuándo</th></tr>
+    <tr><td>GPT-4o-mini</td><td>$0.10 MXN</td><td>Tareas simples: clasificar, extraer, respuestas cortas</td></tr>
+    <tr><td>GPT-4o / Claude Sonnet</td><td>$0.50 MXN</td><td>Tareas complejas: razonamiento, contexto largo</td></tr>
+  </table>
+  <div class="div"></div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>WhatsApp Meta:</strong> $0 si usa Evolution API. Si usa Meta Cloud API: conversaciones/mes × $1 × 1.2.</div></div>
+  <div class="g2" style="margin-top:8px">
+    <div class="mini" style="background:var(--sg)"><div class="mini-lbl" style="color:var(--s)">Evolution API (gratis)</div><div class="mini-val">Volumen bajo-medio, cliente inicia la conversación.</div></div>
+    <div class="mini" style="background:var(--ig)"><div class="mini-lbl" style="color:var(--i)">Meta Cloud API (con costo)</div><div class="mini-val">Verificación oficial, templates proactivos, alto volumen.</div></div>
+  </div>
+</div>
+
+<div class="formula">
+  <div class="formula-title">Fórmula final L2</div>
+  <strong>Fee = infra ($900 o $1,080) + [(hrs base + ajustadores) × tarifa interna × 1.5] + [interacciones/mes × costo/interacción × 1.2] + WA Meta (si aplica) → redondear</strong><br><br>
+  <em>Ejemplo L2 Agente único, neuro+HITL, 80 pacientes GPT-4o, Evolution API, tarifa $300:<br>$900 + (5 × $300 × 1.5) + (80 × 3 × $0.50 × 1.2) + $0 = $900 + $2,250 + $144 = $3,294 →</em> <strong>$3,300/mes</strong>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- ═══ FICHA L3 ═══ -->
+<div class="linea-header l3-bg">
+  <h2>Ficha L3 — Sistema Inteligente</h2>
+</div>
+
+<div class="card">
+  <div class="ct">Infraestructura fija</div>
+  <table class="comp">
+    <tr><th>Herramienta</th><th>Costo/mes</th><th>¿Aplica?</th></tr>
+    <tr><td><strong>Vercel</strong> (panel)</td><td>$200</td><td>Siempre</td></tr>
+    <tr><td><strong>Supabase</strong> (BD)</td><td>$250</td><td>Siempre</td></tr>
+    <tr><td><strong>Respaldos</strong></td><td>$100</td><td>Siempre</td></tr>
+    <tr><td><strong>VPS para n8n</strong></td><td>$150</td><td>Solo si lleva automatizaciones</td></tr>
+    <tr><td><strong>Hosting agente</strong></td><td>$200 (placeholder)</td><td>Solo si lleva empleados IA</td></tr>
+  </table>
+  <div class="g2">
+    <div class="g2">
+      <div class="mini"><div class="mini-lbl">Solo sistema</div><div class="mini-val">($200+$250+$100) × 1.2 = <strong>$660</strong></div></div>
+      <div class="mini"><div class="mini-lbl">+ automatizaciones</div><div class="mini-val">(+$150) × 1.2 = <strong>$840</strong></div></div>
+      <div class="mini"><div class="mini-lbl">+ empleados IA</div><div class="mini-val">(+$200) × 1.2 = <strong>$900</strong></div></div>
+      <div class="mini"><div class="mini-lbl">+ ambos</div><div class="mini-val">(+$150+$200) × 1.2 = <strong>$1,080</strong></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="ct">Soporte mensual</div>
+  <div class="lbl">Paso 1 — Horas base según tamaño del sistema</div>
+  <table class="comp">
+    <tr><th>Tamaño</th><th>Horas/mes</th></tr>
+    <tr><td>S (3–5 entidades)</td><td>3 hrs</td></tr>
+    <tr><td>M (6–10 entidades)</td><td>4.5 hrs</td></tr>
+    <tr><td>L (10+ entidades)</td><td>6 hrs</td></tr>
+  </table>
+  <div class="lbl">Paso 2 — Si lleva automatizaciones, sumar horas según nivel</div>
+  <table class="comp">
+    <tr><th>Nivel de automatización</th><th>+Horas/mes</th></tr>
+    <tr><td>Simple (1–2 flujos)</td><td>+2</td></tr>
+    <tr><td>Media (3–5 flujos)</td><td>+3</td></tr>
+    <tr><td>Compleja (6+ flujos)</td><td>+4</td></tr>
+  </table>
+  <div class="lbl">Paso 3 — Si lleva empleados IA, sumar horas según nivel</div>
+  <table class="comp">
+    <tr><th>Nivel de agente</th><th>+Horas/mes</th></tr>
+    <tr><td>Agente único simple</td><td>+3.5</td></tr>
+    <tr><td>Agente único complejo / Multi-ag básico</td><td>+5</td></tr>
+    <tr><td>Multi-agente complejo</td><td>+6.5</td></tr>
+  </table>
+  <div class="lbl">Paso 4 — Sumar ajustadores si aplican</div>
+  <table class="comp">
+    <tr><th>Condición</th><th>+Horas</th></tr>
+    <tr><td>Tiene capa NLP (consultas en lenguaje natural)</td><td>+0.5</td></tr>
+    <tr><td>3+ roles de usuario</td><td>+0.5</td></tr>
+    <tr><td>Migración legacy activa</td><td>+1</td></tr>
+    <tr><td>Agente tiene neuro-simbólico</td><td>+1</td></tr>
+    <tr><td>Agente tiene HITL</td><td>+0.5</td></tr>
+    <tr><td>Agente opera en 2+ canales</td><td>+0.5</td></tr>
+    <tr><td>Automatización conecta con sistema legacy</td><td>+1</td></tr>
+    <tr><td>Automatización tiene 4+ herramientas externas</td><td>+0.5</td></tr>
+  </table>
+  <div class="lbl">Paso 5 — Calcular costo</div>
+  <div class="mini"><div class="mini-lbl">Fórmula</div><div class="mini-val"><strong>(Hrs sistema + hrs auto + hrs agente + ajustadores) × tarifa interna × 1.5 = costo de soporte</strong></div></div>
+  <div class="mini"><div class="mini-lbl">Ejemplo L3 M solo con NLP, tarifa $300</div><div class="mini-val">(4.5 + 0.5) × $300 × 1.5 = 5 × $450 = <strong>$2,250/mes</strong></div></div>
+  <div class="mini"><div class="mini-lbl">Ejemplo L3 M + auto media + agente único (neuro+HITL), tarifa $300</div><div class="mini-val">(4.5 + 3 + 3.5 + 0.5 + 1 + 0.5) × $300 × 1.5 = 13.5 × $450 = <strong>$6,075/mes</strong></div></div>
+</div>
+
+<div class="card">
+  <div class="ct">Costos variables</div>
+
+  <div class="lbl">Consumo IA</div>
+  <table class="comp">
+    <tr><th>Condición</th><th>Cálculo</th></tr>
+    <tr><td>No tiene NLP ni agentes</td><td>$0</td></tr>
+    <tr><td>Solo capa NLP (consultas del dueño)</td><td>~30–60 consultas/mes × $0.50 × 1.2</td></tr>
+    <tr><td>Tiene empleados IA</td><td>Clientes/mes × interacciones (~3–5) × costo/interacción × 1.2</td></tr>
+    <tr><td>Automatización con paso IA</td><td>Ejecuciones/mes × $0.10 × 1.2</td></tr>
+    <tr><td>Tiene varios de los anteriores</td><td>Sumar todos los que apliquen</td></tr>
+  </table>
+  <table class="comp" style="margin-top:4px">
+    <tr><th>Modelo</th><th>Costo/interacción</th><th>Cuándo</th></tr>
+    <tr><td>GPT-4o-mini</td><td>$0.10 MXN</td><td>Tareas simples</td></tr>
+    <tr><td>GPT-4o / Claude Sonnet</td><td>$0.50 MXN</td><td>Tareas complejas</td></tr>
+  </table>
+
+  <div class="lbl">WhatsApp (solo si lleva agente o automatización por WA)</div>
+  <table class="comp">
+    <tr><th>API</th><th>Costo</th><th>Cuándo</th></tr>
+    <tr><td>Evolution API</td><td>$0</td><td>Volumen bajo-medio, cliente inicia conversación</td></tr>
+    <tr><td>Meta Cloud API</td><td>Conversaciones/mes × $1 × 1.2</td><td>Verificación oficial, templates proactivos, alto volumen</td></tr>
+  </table>
+</div>
+
+<div class="formula" style="background:var(--accent)">
+  <div class="formula-title">Fórmula final L3</div>
+  <strong>Fee = infra (según lo que lleve) + [(hrs sistema + hrs auto + hrs agente + ajustadores) × tarifa interna × 1.5] + consumo IA NLP (si aplica) + consumo IA agente (si aplica) + consumo IA auto (si aplica) + WA Meta (si aplica) → redondear</strong>
+</div>
+
+<div class="lbl">Ejemplos resueltos</div>
+
+<div class="card">
+  <div class="ct">L3 M — solo sistema con NLP, 50 consultas/mes, tarifa $300</div>
+  <div class="row"><div class="dot da"></div><div class="rt">Infra: $660 · Soporte: (4.5+0.5) × $300 × 1.5 = $2,250 · IA: 50 × $0.50 × 1.2 = $30</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>$660 + $2,250 + $30 = $2,940 → $3,000/mes</strong></div></div>
+</div>
+
+<div class="card">
+  <div class="ct">L3 M — con auto simple + agente único (neuro+HITL), 80 pacientes GPT-4o, Evolution, tarifa $300</div>
+  <div class="row"><div class="dot da"></div><div class="rt">Infra: $1,080 · Soporte: (4.5+2+3.5+0.5+1+0.5) × $450 = 12.5 × $450 = $5,625 · IA: 80×3×$0.50×1.2 = $144</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>$1,080 + $5,625 + $144 = $6,849 → $6,800/mes</strong></div></div>
+</div>
+
+<div class="card">
+  <div class="ct">L3 L — con auto media + multi-ag básico (neuro+HITL+2 canales) + NLP, 200 clientes GPT-4o-mini, Meta, legacy, tarifa $300</div>
+  <div class="row"><div class="dot da"></div><div class="rt">Infra: $1,080 · Soporte: (6+3+5+0.5+1+0.5+0.5+1) × $450 = 17.5 × $450 = $7,875</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt">IA NLP: 50×$0.50×1.2=$30 · IA agente: 200×4×$0.10×1.2=$96 · WA Meta: 200×$1×1.2=$240</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>$1,080 + $7,875 + $30 + $96 + $240 = $9,321 → $9,300/mes</strong></div></div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- NOTA TARIFA DE SOPORTE -->
+<div class="card">
+  <div class="ct">Nota: tarifa de soporte</div>
+  <div class="cs">Aplica igual para las 3 fichas. <strong>Tarifa de soporte = tarifa interna de Solemia × 1.5.</strong> Si la tarifa interna es $300/hr → tarifa de soporte = $450/hr. Es donde vive el margen recurrente. El cliente no ve la tarifa — ve el número final.</div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- CÓMO SE PRESENTA -->
+<div class="stitle">Cómo se presenta al cliente</div>
+<div class="card">
+  <div class="cs" style="font-style:italic;color:var(--text)">"Fee mensual: $3,300 MXN/mes. Desglose: Infraestructura $900 (hosting, base de datos — al costo). Mantenimiento y soporte $2,250 (monitoreo, hasta 3 ajustes/mes, soporte &lt;24h). Consumo IA ~$144 estimado (se reporta con consumo real cada mes, puede variar)."</div>
+  <div class="div"></div>
+  <div class="cs">Infraestructura y consumo IA son transparentes. Soporte es donde vive el margen pero el cliente lo percibe como justo porque incluye horas humanas reales.</div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<div class="stitle">Regla de descuento</div>
+<div class="card">
+  <div class="ct">Hasta 25–30% off en el setup</div>
+  <div class="cs">Nunca en el fee mensual. Solo para los primeros 3 clientes por tipo de problema.</div>
+  <div class="div"></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>Caso de estudio documentado</strong> con métricas reales</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>Testimonial</strong> — idealmente en video</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>Permiso para usar nombre y resultados</strong></div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>Compromiso mínimo de 6 meses</strong></div></div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 5: ACELERACIÓN (actualizado para 3 líneas)
+════════════════════════════════════════════════════════ -->
+<div id="s-accel" class="sec">
+
+<div class="qb">
+  <div class="qt">El cuello de botella no es la velocidad de escritura de código — es que cada proyecto arranca desde cero. La forma de acelerar no es trabajar más rápido, es empezar cada proyecto más adelante.</div>
+</div>
+
+<div class="stitle">Solemia Base Kit</div>
+<div class="cs" style="margin-bottom:12px">Repositorio base que ya tiene resuelto todo lo que es igual en todos los proyectos. No es un producto — es infraestructura interna para construir más rápido.</div>
+
+<div class="card">
+  <div class="ct">Para Sistemas Inteligentes (L3)</div>
+  <div class="row"><div class="dot dg"></div><div class="rt">Next.js + Supabase configurados, auth, roles y permisos, layout del panel, componentes UI reutilizables, patrón CRUD genérico, sistema de notificaciones, capa NLP, deploy a Vercel.</div></div>
+</div>
+
+<div class="card">
+  <div class="ct">Para Automatizaciones (L1)</div>
+  <div class="row"><div class="dot dg"></div><div class="rt">Templates de flujos n8n para patrones comunes (trigger → acción, condicional, multi-herramienta), conectores pre-configurados para las herramientas más usadas.</div></div>
+</div>
+
+<div class="card">
+  <div class="ct">Para Empleados IA (L2)</div>
+  <div class="row"><div class="dot dg"></div><div class="rt">Conexión a Evolution API para WhatsApp, template de flujo de agente (recibir → consultar → responder), panel de supervisión base, patrones de conexión a datos, sistema de logging.</div></div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<div class="stitle">Impacto en tiempos de desarrollo</div>
+
+<table class="comp">
+  <tr><th>Proyecto</th><th>Sin Base Kit</th><th>Con Base Kit</th><th>BK + Módulos</th></tr>
+  <tr><td><strong>L1 Simple</strong></td><td>8–15 hrs</td><td>5–10 hrs</td><td>3–7 hrs</td></tr>
+  <tr><td><strong>L1 Media</strong></td><td>15–30 hrs</td><td>10–20 hrs</td><td>7–15 hrs</td></tr>
+  <tr><td><strong>L1 Compleja</strong></td><td>30–50 hrs</td><td>20–35 hrs</td><td>15–28 hrs</td></tr>
+  <tr><td><strong>L2 Agente único</strong></td><td>15–25 hrs</td><td>8–15 hrs</td><td>5–10 hrs</td></tr>
+  <tr><td><strong>L2 Multi-ag. básico</strong></td><td>30–55 hrs</td><td>18–35 hrs</td><td>12–25 hrs</td></tr>
+  <tr><td><strong>L2 Multi-ag. complejo</strong></td><td>55–90 hrs</td><td>35–60 hrs</td><td>25–45 hrs</td></tr>
+  <tr><td><strong>L3 S</strong></td><td>40–60 hrs</td><td>25–38 hrs</td><td>18–28 hrs</td></tr>
+  <tr><td><strong>L3 M</strong></td><td>70–120 hrs</td><td>40–75 hrs</td><td>25–50 hrs</td></tr>
+  <tr><td><strong>L3 L</strong></td><td>120–200 hrs</td><td>75–130 hrs</td><td>50–90 hrs</td></tr>
+</table>
+
+<div class="g3" style="margin-top:12px">
+  <div class="card" style="text-align:center">
+    <div class="pill pr">Hoy</div>
+    <div style="font-size:22px;font-weight:600;margin:4px 0">2–3</div>
+    <div style="font-size:12px;color:var(--text2)">proyectos simultáneos</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="pill pw">Con Base Kit</div>
+    <div style="font-size:22px;font-weight:600;margin:4px 0">3–5</div>
+    <div style="font-size:12px;color:var(--text2)">proyectos simultáneos</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="pill pg">BK + Módulos</div>
+    <div style="font-size:22px;font-weight:600;margin:4px 0">5–8</div>
+    <div style="font-size:12px;color:var(--text2)">proyectos simultáneos</div>
+  </div>
+</div>
+
+<div class="tip" style="margin-top:10px"><strong>El precio al cliente no cambia.</strong> El piso baja porque el costo interno baja. El margen sube. No bajes los precios — el margen financia el crecimiento.</div>
+
+<div class="formula" style="margin-top:14px">
+  <div class="formula-title">La ruta</div>
+  <strong>Proyectos custom → generan módulos → módulos + lógica de dominio → producto vertical → escala sin depender de capacidad por cliente</strong>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 6: AGENTE CONSTRUCTOR (BORRADOR — sin cambios)
+════════════════════════════════════════════════════════ -->
+<div id="s-agente" class="sec">
+
+<div class="note" style="margin-bottom:14px"><strong>⚠︎ BORRADOR</strong> — Este concepto está en exploración. Requiere que el Base Kit y los módulos existan primero.</div>
+
+<div class="qb">
+  <div class="qt">Un sistema que construye proyectos en segundo plano y solo solicita confirmaciones, revisiones e información. Andrés define qué construir; el agente ejecuta y para en checkpoints definidos.</div>
+</div>
+
+<div class="stitle">Impacto en tiempo humano</div>
+<table class="comp">
+  <tr><th>Proyecto</th><th>Horas totales (BK + Módulos)</th><th>Horas humanas con agente</th></tr>
+  <tr><td><strong>L1 Simple</strong></td><td>3–7 hrs</td><td>1–3 hrs</td></tr>
+  <tr><td><strong>L1 Media</strong></td><td>7–15 hrs</td><td>3–5 hrs</td></tr>
+  <tr><td><strong>L2 Agente único</strong></td><td>5–10 hrs</td><td>2–4 hrs</td></tr>
+  <tr><td><strong>L2 Multi-ag. básico</strong></td><td>12–25 hrs</td><td>4–8 hrs</td></tr>
+  <tr><td><strong>L3 S</strong></td><td>18–28 hrs</td><td>6–10 hrs</td></tr>
+  <tr><td><strong>L3 M</strong></td><td>25–50 hrs</td><td>8–15 hrs</td></tr>
+  <tr><td><strong>L3 L</strong></td><td>50–90 hrs</td><td>16–28 hrs</td></tr>
+</table>
+
+<div class="g3" style="margin-top:12px">
+  <div class="card" style="text-align:center">
+    <div class="pill pw">BK + Módulos</div>
+    <div style="font-size:22px;font-weight:600;margin:4px 0">5–8</div>
+    <div style="font-size:12px;color:var(--text2)">supervisión activa</div>
+  </div>
+  <div class="card" style="text-align:center;border-color:var(--s)">
+    <div class="pill pg">+ Agente constructor</div>
+    <div style="font-size:22px;font-weight:600;color:var(--s);margin:4px 0">8–12</div>
+    <div style="font-size:12px;color:var(--text2)">supervisión por checkpoints</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="pill pa">Cuello de botella</div>
+    <div style="font-size:13px;font-weight:500;margin:6px 0">Pasa de producción a ventas</div>
+  </div>
+</div>
+
+<div class="stitle" style="margin-top:16px">Los 4 checkpoints</div>
+<div class="card">
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>CP1 — Estructura:</strong> tablas creadas, módulos activados, CRUD generado. "¿Confirmo?"</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>CP2 — Lógica:</strong> reglas de negocio implementadas. "¿Es correcto?"</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>CP3 — Vistas:</strong> panel generado. "¿Falta o sobra algo?"</div></div>
+  <div class="row"><div class="dot dg"></div><div class="rt"><strong>CP4 — Agente:</strong> configurado y probado. "¿Apruebo?"</div></div>
+</div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 7: GESTIÓN DE CAPACIDAD
+════════════════════════════════════════════════════════ -->
+<div id="s-cap" class="sec">
+
+<div class="qb">
+  <div class="qt">El sistema que define cuántos proyectos aceptar, cuántas horas dedicar a cada uno por día, y en qué orden cerrarlos para maximizar la entrada de capital.</div>
+</div>
+
+<!-- CAPACIDAD BASE -->
+<div class="stitle">Capacidad base del equipo</div>
+
+<div class="g2">
+  <div class="card" style="text-align:center">
+    <div class="ct">Andrés</div>
+    <div style="font-size:28px;font-weight:600;color:var(--accent);margin:6px 0">134 hrs/mes</div>
+    <div class="cs">~6.7 hrs/día · ~33.5 hrs/semana</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:4px">Diagnósticos, diseño/spec, revisión, comunicación con clientes, testing, capacitación, marketing</div>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="ct">Mario</div>
+    <div style="font-size:28px;font-weight:600;color:var(--i);margin:6px 0">134 hrs/mes</div>
+    <div class="cs">~6.7 hrs/día · ~33.5 hrs/semana</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:4px">Construcción, automatizaciones, agentes, backend, deploy, configuración de producción</div>
+  </div>
+</div>
+
+<div class="mini" style="margin-top:6px">
+  <div class="mini-lbl">Total productivo</div>
+  <div class="mini-val"><strong>268 hrs/mes</strong> · ya considera el 70% de productividad real</div>
+</div>
+
+<div class="info"><strong>El cuello de botella casi siempre es Mario.</strong> Andrés puede diagnosticar, diseñar y revisar en paralelo porque son bloques cortos. Mario necesita bloques continuos de construcción. La gestión de capacidad se planifica alrededor de las horas de Mario.</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- REGLAS BASE -->
+<div class="stitle">Reglas de asignación</div>
+
+<div class="card">
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>Bloque mínimo: 2 horas seguidas.</strong> Menos de eso se pierde en contexto. Si no puedes darle 2 horas a un proyecto en un día, no lo tocas ese día.</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>Máximo de proyectos en construcción simultánea: 3.</strong> Con 2 el cambio de contexto es manejable. Con 3 es el límite. Con 4+ la calidad baja y todo se atrasa.</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>Prioridad de cierre: el que está más cerca de terminar.</strong> Cerrar = empezar a cobrar fee + liberar capacidad. Un proyecto terminado vale más que dos a medias.</div></div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- SPRINT VS SOSTENIDO -->
+<div class="stitle">Sprint vs Sostenido</div>
+
+<div class="g2">
+  <div class="card" style="border-left:2px solid var(--accent)">
+    <div class="ct">Modo Sprint</div>
+    <div class="cs">6+ hrs/día al proyecto. Avance máximo. Se termina rápido. Se usa para proyectos chicos o para cerrar los últimos 15 hrs de cualquier proyecto.</div>
+  </div>
+  <div class="card" style="border-left:2px solid var(--i)">
+    <div class="ct">Modo Sostenido</div>
+    <div class="cs">2–4 hrs/día. Avance constante pero más lento. Se usa para proyectos grandes que corren en paralelo con otros.</div>
+  </div>
+</div>
+
+<div class="lbl">Días de cierre por tipo de proyecto</div>
+
+<table class="comp">
+  <tr><th>Proyecto</th><th>Horas totales</th><th>Sprint (6 hrs/día)</th><th>Sostenido (3 hrs/día)</th></tr>
+  <tr><td><strong>L1 Simple</strong></td><td>8–15 hrs</td><td>1–2 días</td><td>3–5 días</td></tr>
+  <tr><td><strong>L1 Media</strong></td><td>15–30 hrs</td><td>3–5 días</td><td>5–10 días</td></tr>
+  <tr><td><strong>L1 Compleja</strong></td><td>30–50 hrs</td><td>5–8 días</td><td>10–17 días</td></tr>
+  <tr><td><strong>L2 Agente único</strong></td><td>15–25 hrs</td><td>3–4 días</td><td>5–8 días</td></tr>
+  <tr><td><strong>L2 Multi-ag. básico</strong></td><td>30–55 hrs</td><td>5–9 días</td><td>8–14 días</td></tr>
+  <tr><td><strong>L2 Multi-ag. complejo</strong></td><td>55–90 hrs</td><td>9–15 días</td><td>14–23 días</td></tr>
+  <tr><td><strong>L3 S</strong></td><td>40–60 hrs</td><td>7–10 días</td><td>13–20 días</td></tr>
+  <tr><td><strong>L3 M</strong></td><td>70–120 hrs</td><td>12–20 días</td><td>18–30 días</td></tr>
+  <tr><td><strong>L3 L</strong></td><td>120–200 hrs</td><td>20–33 días</td><td>30–50 días</td></tr>
+</table>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- ESCENARIOS DE DISTRIBUCIÓN -->
+<div class="stitle">Escenarios de distribución diaria de Mario (6.7 hrs/día)</div>
+
+<div class="card">
+  <div class="pill pr">Escenario A</div>
+  <div class="ct">1 proyecto grande (L3 M o L)</div>
+  <div class="cs">4–5 hrs/día al grande en sostenido. Quedan 2 hrs/día para un proyecto chico en sprint. El chico se cierra en 3–5 días y empieza a generar fee mientras el grande sigue avanzando.</div>
+</div>
+
+<div class="card">
+  <div class="pill pw">Escenario B</div>
+  <div class="ct">2 proyectos medianos</div>
+  <div class="cs">3–3.5 hrs a cada uno en sostenido. El que llega a sus últimas 15 horas pasa a sprint y el otro se pausa 2–3 días para cerrar el primero.</div>
+</div>
+
+<div class="card">
+  <div class="pill pi">Escenario C</div>
+  <div class="ct">1 mediano + 2 chicos</div>
+  <div class="cs">Mediano en sostenido (3 hrs/día). Los chicos en sprint alternado: un día sprint al chico A (4 hrs), otro día sprint al chico B (4 hrs). Los chicos se cierran en 1 semana y el mediano sigue constante.</div>
+</div>
+
+<div class="card">
+  <div class="pill pg">Escenario D</div>
+  <div class="ct">Todo chico</div>
+  <div class="cs">Sprint secuencial. 6+ hrs/día a uno hasta terminarlo, siguiente. 3–4 proyectos cerrados en 2 semanas. Máxima velocidad de entrada de capital.</div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- PRIORIZACIÓN PARA CAPITAL -->
+<div class="stitle">Priorización para entrada de capital</div>
+
+<div class="formula">
+  <div class="formula-title">Lógica de prioridad</div>
+  <strong>1º</strong> Proyectos a los que les faltan <strong>menos de 15 horas</strong> → siempre sprint. Cerrarlos ya.<br>
+  <strong>2º</strong> Proyectos chicos nuevos (L1 o L2 agente único) → sprint. Se cierran en días, generan fee inmediato.<br>
+  <strong>3º</strong> Proyectos grandes → sostenido mientras los chicos se sprintean. Avanzan constante pero no bloquean capital.
+</div>
+
+<div class="card">
+  <div class="ct">Por qué chicos primero</div>
+  <div class="cs">Un L1 simple de $12,000 setup toma 10 horas. Ingreso por hora invertida: <strong>$1,200/hr.</strong> Un L3 M de $55,000 toma 95 horas. Ingreso por hora invertida: <strong>$579/hr.</strong> El chico genera más ingreso por hora invertida. Si necesitas capital rápido, chicos primero. Si tienes estabilidad, prioriza los grandes por el fee mensual más alto a largo plazo.</div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- PIPELINE DE FASES -->
+<div class="stitle">Pipeline de fases — Andrés adelanta, Mario construye</div>
+
+<div class="card">
+  <div class="cs">No todos los proyectos deben estar en la misma fase al mismo tiempo. Andrés siempre adelanta el siguiente proyecto mientras Mario construye el actual. Cuando Mario termina uno, el siguiente ya tiene spec listo.</div>
+</div>
+
+<table class="comp">
+  <tr><th>Fase</th><th>Quién</th><th>Horas típicas</th></tr>
+  <tr><td><strong>1. Diagnóstico y cierre</strong></td><td>Andrés (Mario valida mínimo)</td><td>3–5 hrs</td></tr>
+  <tr><td><strong>2. Especificación y diseño</strong></td><td>Andrés (Mario valida técnico)</td><td>Andrés: 8–15 hrs · Mario: 3–5 hrs</td></tr>
+  <tr><td><strong>3. Construcción</strong></td><td>Mario (Andrés revisa)</td><td>Mario: grueso · Andrés: 2–3 hrs/sem</td></tr>
+  <tr><td><strong>4. Entrega</strong></td><td>Ambos</td><td>5–10 hrs entre los dos</td></tr>
+</table>
+
+<div class="lbl">Pipeline tipo — 5 semanas</div>
+
+<table class="comp">
+  <tr><th>Semana</th><th>Proyecto A</th><th>Proyecto B</th><th>Proyecto C</th><th>Proyecto D</th></tr>
+  <tr><td><strong>1</strong></td><td>Construcción (Mario)</td><td>Construcción chico (Mario)</td><td>Diseño (Andrés)</td><td>Diagnóstico (Andrés)</td></tr>
+  <tr><td><strong>2</strong></td><td>Construcción (Mario)</td><td>Entrega (ambos) → <strong>CERRADO</strong></td><td>Diseño (Andrés)</td><td>Cierre (Andrés)</td></tr>
+  <tr><td><strong>3</strong></td><td>Entrega (ambos) → <strong>CERRADO</strong></td><td>—</td><td>Construcción (Mario)</td><td>Diseño (Andrés)</td></tr>
+  <tr><td><strong>4</strong></td><td>—</td><td>Nuevo E → Diag</td><td>Construcción (Mario)</td><td>Construcción chico (Mario)</td></tr>
+  <tr><td><strong>5</strong></td><td>—</td><td>Diseño (Andrés)</td><td>Entrega → <strong>CERRADO</strong></td><td>Entrega → <strong>CERRADO</strong></td></tr>
+</table>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- REGLA DE ACEPTACIÓN -->
+<div class="stitle">Regla de aceptación de proyectos</div>
+
+<div class="card">
+  <div class="ct">La pregunta semanal</div>
+  <div class="cs" style="font-size:15px;font-weight:500;color:var(--text);text-align:center;padding:8px 0">¿Mario tiene más de 3 semanas de construcción en cola?</div>
+  <div class="div"></div>
+  <div class="g3">
+    <div class="mini" style="background:var(--sg)">
+      <div class="mini-lbl" style="color:var(--s)">No → verde</div>
+      <div class="mini-val">Cierra proyectos agresivamente. Hay capacidad.</div>
+    </div>
+    <div class="mini" style="background:var(--wg)">
+      <div class="mini-lbl" style="color:var(--w)">Sí → amarillo</div>
+      <div class="mini-val">Sigue diagnosticando y diseñando. No prometas timeline corto.</div>
+    </div>
+    <div class="mini" style="background:var(--dg)">
+      <div class="mini-lbl" style="color:var(--d)">+5 semanas → rojo</div>
+      <div class="mini-val">Capacidad máxima. Solo acepta si el cliente espera o si es L1 que Andrés hace solo.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="ct">Cuándo decir no</div>
+  <div class="row"><div class="dot dr"></div><div class="rt">El proyecto está fuera de los verticales objetivo y no es L1 pura.</div></div>
+  <div class="row"><div class="dot dr"></div><div class="rt">El cliente no puede esperar el timeline que el pipeline define.</div></div>
+  <div class="row"><div class="dot dr"></div><div class="rt">El fee mensual proyectado no justifica ocupar la capacidad.</div></div>
+</div>
+
+<div class="card">
+  <div class="ct">Cuándo decir "arrancamos diseño ahora, construcción en X semanas"</div>
+  <div class="row"><div class="dot dw"></div><div class="rt">Pipeline de Mario lleno pero el proyecto es bueno. El cliente valora la honestidad con el timeline. Durante la espera, Andrés tiene el spec perfecto listo para que Mario arranque sin fricción.</div></div>
+</div>
+
+<div class="div" style="margin:20px 0"></div>
+
+<!-- CONTROL SEMANAL -->
+<div class="stitle">Herramienta de control semanal</div>
+
+<div class="card">
+  <div class="ct">Cada lunes — Andrés y Mario revisan</div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>¿Qué proyectos están en construcción?</strong> Lista con horas restantes por proyecto.</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>¿Cuál está más cerca de cerrarse?</strong> → Ese va a sprint.</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>¿Hay un chico nuevo que se puede sprintear esta semana?</strong> → Entra.</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>¿El proyecto grande está avanzando al menos 15 hrs/semana?</strong> → Si no, se está estancando.</div></div>
+  <div class="row"><div class="dot da"></div><div class="rt"><strong>¿Andrés tiene specs listos para cuando Mario libere capacidad?</strong> → Si no, hay que adelantar diseño.</div></div>
+</div>
+
+</div>
+
+</div><!-- /wrapper -->
+
+<script>
+function show(id,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
